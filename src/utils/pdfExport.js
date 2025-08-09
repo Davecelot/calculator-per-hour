@@ -1,13 +1,12 @@
-// src/utils/pdfExport.js
-export async function exportPDF(rows = [], columns = []) {
-  const [{ jsPDF }, autoTableMod] = await Promise.all([
-    import('jspdf'),
-    import('jspdf-autotable')
-  ]);
+// ESM correcto para jsPDF + autotable
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
-  const autoTable = autoTableMod.default || autoTableMod.autoTable; // compat
+// Named export con el NOMBRE EXACTO que importas en App.jsx
+export async function pdfExport({ rows = [], columns = [], filename = 'estimate.pdf' } = {}) {
   const doc = new jsPDF();
 
+  // v3 de jspdf-autotable: se invoca como función
   autoTable(doc, {
     head: [columns],
     body: rows,
@@ -15,5 +14,5 @@ export async function exportPDF(rows = [], columns = []) {
     theme: 'grid'
   });
 
-  doc.save('estimate.pdf');
+  doc.save(filename);
 }
