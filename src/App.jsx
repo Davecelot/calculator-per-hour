@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { PRESETS, CLIENT_MULT, COMPLEXITY_MULT, retainerSuggestion } from './presets.js';
+import { PRESETS, retainerSuggestion } from './presets.js';
 import clsx from 'clsx';
+
+// Import components
+import RegionSelector from './components/RegionSelector';
+import DebouncedInput from './components/DebouncedInput';
+import AccessibleSelect from './components/AccessibleSelect';
+import ThemeToggle from './components/ThemeToggle';
+
+// Import hooks
+import { useRateCalculation } from './hooks/useRateCalculation';
+import { useLocalStorage } from './hooks/useLocalStorage';
+import { pdfExport } from './utils/pdfExport';
 
 /**
  * Format a numeric value as a currency string. Uses the chosen
@@ -111,32 +122,36 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [retainerHours, engagement]);
 
-  // Derived computations
-  const billableHours = Math.max(1, weeks * hoursPerWeek * (billablePct / 100));
-  const marginFactor = 1 + marginPct / 100;
-  const rateUI = ((uiIncome + overhead) * marginFactor) / billableHours;
-  const rateUXR = ((uxrIncome + overhead) * marginFactor) / billableHours;
-  // Determine the number of hours to use for pricing; if the user
-  // specifies a total manually, override the sum of research/UI hours.
-  const totalProjectHours = hoursTotalManual > 0 ? hoursTotalManual : hoursResearch + hoursUI;
-  // Compute blended rate as a weighted average. If no hours
-  // specified at all, use a simple average of the two rates.
-  const blendedRate = (hoursResearch + hoursUI) > 0
-    ? ((hoursResearch * rateUXR + hoursUI * rateUI) / (hoursResearch + hoursUI))
-    : (rateUI + rateUXR) / 2;
-  // Apply adjusters
-  const clientK = CLIENT_MULT[clientType] ?? 0;
-  const complexityK = COMPLEXITY_MULT[complexity] ?? 0;
-  const valueK = valueUpliftPct / 100;
-  const rushK = rushPct / 100;
-  const adjustedRate = blendedRate * (1 + clientK + complexityK + valueK + rushK);
-  // Fixed price estimate including contingency
-  const fixedPrice = totalProjectHours * adjustedRate * (1 + contingencyPct / 100);
-  // Retainer price
-  const retainerDisc = retainerDiscountPct / 100;
-  const retainerPrice = engagement === 'retainer' && retainerHours > 0
-    ? retainerHours * adjustedRate * (1 - retainerDisc)
-    : 0;
+  // Use the rate calculation hook instead of inline calculations
+  const {
+    billableHours,
+    rateUI,
+    rateUXR,
+    blendedRate,
+    adjustedRate,
+    totalProjectHours,
+    fixedPrice,
+    retainerPrice
+  } = useRateCalculation({
+    uiIncome,
+    uxrIncome,
+    overhead,
+    weeks,
+    hoursPerWeek,
+    billablePct,
+    marginPct,
+    hoursResearch,
+    hoursUI,
+    hoursTotalManual,
+    clientType,
+    complexity,
+    valueUpliftPct,
+    rushPct,
+    contingencyPct,
+    engagement,
+    retainerHours,
+    retainerDiscountPct,
+  });
 
   // Export the current estimation to a JSON file for download
   function exportJson() {
@@ -185,11 +200,49 @@ export default function App() {
     a.click();
   }
 
+  // Export to PDF
+  function handleExportPDF() {
+    pdfExport({
+      region,
+      currency,
+      billableHours,
+      rateUI,
+      rateUXR,
+      blendedRate,
+      adjustedRate,
+      totalProjectHours,
+      fixedPrice,
+      retainerPrice,
+      retainerHours,
+      retainerDiscountPct
+    });
+  }
+
+  // Client type options for AccessibleSelect
+  const clientTypeOptions = [
+    { value: 'startup', label: 'Startup / Emprendimiento' },
+    { value: 'smb', label: 'PyME / Empresa mediana' },
+    { value: 'enterprise', label: 'Empresa grande / Corporación' },
+  ];
+
+  // Complexity options for AccessibleSelect
+  const complexityOptions = [
+    { value: 'simple', label: 'Simple / Básico' },
+    { value: 'standard', label: 'Estándar / Promedio' },
+    { value: 'complex', label: 'Complejo / Avanzado' },
+  ];
+
+  // Engagement options for AccessibleSelect
+  const engagementOptions = [
+    { value: 'freelance', label: 'Freelance / Proyecto' },
+    { value: 'retainer', label: 'In‑house partner / Retainer mensual' },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
       <header
-        className="p-5 border-b"
+        className="p-5 border-b flex justify-between items-center"
         style={{
           borderColor: 'var(--border)',
           background: 'linear-gradient(180deg, rgba(124,92,255,0.12), transparent)',
@@ -198,130 +251,107 @@ export default function App() {
         <h1 className="m-0 text-xl sm:text-2xl md:text-3xl font-bold">
           Conversor de tarifas (editable) — No‑Code / UI &amp; Research
         </h1>
-        <p className="text-sm muted mt-2">
-          Configura los presets por región y obtén: tarifa/hora base por rol,
-          tarifa ajustada por cliente/alcance, precio por proyecto y
-          retainer mensual. Todo es <strong>100% editable</strong>; los valores por
-          defecto provienen de referencias 2025.
-        </p>
+        <ThemeToggle />
       </header>
 
-      {/* Main content area */}
-      <div className="flex flex-col md:flex-row gap-4 p-4 flex-1">
-        {/* Left: Inputs */}
-        <section className="w-full md:w-7/12">
+      <div className="flex-grow flex flex-col md:flex-row">
+        {/* Left: Form */}
+        <section className="w-full md:w-7/12 p-4">
           <div className="card">
             <div className="grid grid-cols-12 gap-3">
               {/* Region and currency selectors */}
-              <div className="col-span-12 md:col-span-6">
-                <label className="text-xs muted">Región (preset)</label>
-                <select
-                  value={region}
-                  onChange={(e) => setRegion(e.target.value)}
-                >
-                  <option value="LATAM">Latinoamérica (preset)</option>
-                  <option value="EU_WEST">Europa Occidental (preset)</option>
-                  <option value="EU_EAST">Europa del Este (preset)</option>
-                  <option value="USA">USA / Canadá (preset)</option>
-                </select>
-              </div>
-              <div className="col-span-12 md:col-span-6">
-                <label className="text-xs muted">Moneda (solo visual)</label>
-                <select value={currency} onChange={(e) => setCurrency(e.target.value)}>
-                  <option value="USD">USD ($)</option>
-                  <option value="EUR">EUR (€)</option>
-                  <option value="ARS">ARS ($)</option>
-                  <option value="GBP">GBP (£)</option>
-                </select>
-              </div>
+              <RegionSelector 
+                region={region} 
+                setRegion={setRegion} 
+                currency={currency} 
+                setCurrency={setCurrency} 
+              />
 
               {/* Business assumptions */}
               <div className="col-span-12 mt-2">
                 <h2 className="text-base font-semibold">Supuestos del negocio (por persona)</h2>
               </div>
               <div className="col-span-12 md:col-span-4">
-                <label className="text-xs muted">Ingresos anuales deseados — UI Senior</label>
-                <input
+                <DebouncedInput
+                  label="Ingresos anuales deseados — UI Senior"
+                  initialValue={uiIncome}
+                  onValueChange={setUiIncome}
+                  min={0}
+                  step={1000}
                   type="number"
-                  min="0"
-                  step="1000"
-                  value={uiIncome}
-                  onChange={(e) => setUiIncome(Number(e.target.value))}
                 />
               </div>
               <div className="col-span-12 md:col-span-4">
-                <label className="text-xs muted">Ingresos anuales deseados — Research Senior</label>
-                <input
+                <DebouncedInput
+                  label="Ingresos anuales deseados — Research Senior"
+                  initialValue={uxrIncome}
+                  onValueChange={setUxrIncome}
+                  min={0}
+                  step={1000}
                   type="number"
-                  min="0"
-                  step="1000"
-                  value={uxrIncome}
-                  onChange={(e) => setUxrIncome(Number(e.target.value))}
                 />
               </div>
               <div className="col-span-12 md:col-span-4">
-                <label className="text-xs muted">Overhead anual (licencias, equipo, marketing) — por persona</label>
-                <input
+                <DebouncedInput
+                  label="Overhead anual (licencias, equipo, marketing) — por persona"
+                  initialValue={overhead}
+                  onValueChange={setOverhead}
+                  min={0}
+                  step={500}
                   type="number"
-                  min="0"
-                  step="500"
-                  value={overhead}
-                  onChange={(e) => setOverhead(Number(e.target.value))}
                 />
               </div>
 
               <div className="col-span-12 md:col-span-4">
-                <label className="text-xs muted">Semanas trabajadas/año</label>
-                <input
+                <DebouncedInput
+                  label="Semanas trabajadas/año"
+                  initialValue={weeks}
+                  onValueChange={setWeeks}
+                  min={1}
+                  max={52}
                   type="number"
-                  min="1"
-                  max="52"
-                  value={weeks}
-                  onChange={(e) => setWeeks(Number(e.target.value))}
                 />
               </div>
               <div className="col-span-12 md:col-span-4">
-                <label className="text-xs muted">Horas por semana</label>
-                <input
+                <DebouncedInput
+                  label="Horas trabajadas/semana"
+                  initialValue={hoursPerWeek}
+                  onValueChange={setHoursPerWeek}
+                  min={1}
+                  max={80}
                   type="number"
-                  min="1"
-                  max="80"
-                  value={hoursPerWeek}
-                  onChange={(e) => setHoursPerWeek(Number(e.target.value))}
                 />
               </div>
               <div className="col-span-12 md:col-span-4">
-                <label className="text-xs muted">% de horas facturables (descontando reuniones, ventas, admin)</label>
-                <input
+                <DebouncedInput
+                  label="% de horas facturables"
+                  initialValue={billablePct}
+                  onValueChange={setBillablePct}
+                  min={1}
+                  max={100}
                   type="number"
-                  min="10"
-                  max="100"
-                  value={billablePct}
-                  onChange={(e) => setBillablePct(Number(e.target.value))}
+                  helpText="Porcentaje de tiempo dedicado a trabajo facturable"
                 />
-                <div className="muted small mt-1">
-                  Esto calcula automáticamente las <em>horas facturables/año</em>.
-                </div>
               </div>
 
               <div className="col-span-12 md:col-span-6">
-                <label className="text-xs muted">Margen de beneficio (%)</label>
-                <input
+                <DebouncedInput
+                  label="Margen de ganancia (%)"
+                  initialValue={marginPct}
+                  onValueChange={setMarginPct}
+                  min={0}
+                  max={100}
                   type="number"
-                  min="0"
-                  max="200"
-                  value={marginPct}
-                  onChange={(e) => setMarginPct(Number(e.target.value))}
                 />
               </div>
               <div className="col-span-12 md:col-span-6">
-                <label className="text-xs muted">Reserva para contingencias del proyecto (%)</label>
-                <input
+                <DebouncedInput
+                  label="Reserva de contingencia (%)"
+                  initialValue={contingencyPct}
+                  onValueChange={setContingencyPct}
+                  min={0}
+                  max={100}
                   type="number"
-                  min="0"
-                  max="100"
-                  value={contingencyPct}
-                  onChange={(e) => setContingencyPct(Number(e.target.value))}
                 />
               </div>
 
@@ -330,69 +360,67 @@ export default function App() {
                 <h2 className="text-base font-semibold">Alcance del proyecto y mezcla de horas</h2>
               </div>
               <div className="col-span-12 md:col-span-4">
-                <label className="text-xs muted">Horas de Research (entrevistas, tests, análisis)</label>
-                <input
+                <DebouncedInput
+                  label="Horas de Research (entrevistas, tests, análisis)"
+                  initialValue={hoursResearch}
+                  onValueChange={setHoursResearch}
+                  min={0}
+                  step={1}
                   type="number"
-                  min="0"
-                  step="1"
-                  value={hoursResearch}
-                  onChange={(e) => setHoursResearch(Number(e.target.value))}
                 />
               </div>
               <div className="col-span-12 md:col-span-4">
-                <label className="text-xs muted">Horas de UI / Build (wireframes, UI, No‑Code)</label>
-                <input
+                <DebouncedInput
+                  label="Horas de UI / Build (wireframes, UI, No‑Code)"
+                  initialValue={hoursUI}
+                  onValueChange={setHoursUI}
+                  min={0}
+                  step={1}
                   type="number"
-                  min="0"
-                  step="1"
-                  value={hoursUI}
-                  onChange={(e) => setHoursUI(Number(e.target.value))}
                 />
               </div>
               <div className="col-span-12 md:col-span-4">
-                <label className="text-xs muted">¿Horas totales del proyecto?</label>
-                <input
+                <DebouncedInput
+                  label="¿Horas totales del proyecto?"
+                  initialValue={hoursTotalManual}
+                  onValueChange={setHoursTotalManual}
+                  min={0}
+                  step={1}
                   type="number"
-                  min="0"
-                  step="1"
-                  value={hoursTotalManual}
-                  onChange={(e) => setHoursTotalManual(Number(e.target.value))}
+                  helpText="Opcional. Sobreescribe la suma de horas."
                 />
-                <div className="muted small mt-1">
-                  Dejar en 0 para usar <em>Research + UI</em>.
-                </div>
               </div>
 
-              {/* Adjusters for client and complexity */}
+              {/* Adjusters */}
               <div className="col-span-12 mt-2">
-                <h2 className="text-base font-semibold">Ajustes por tipo de cliente y complejidad</h2>
+                <h2 className="text-base font-semibold">Ajustes por cliente y complejidad</h2>
+              </div>
+              <div className="col-span-12 md:col-span-6">
+                <AccessibleSelect
+                  id="client-type"
+                  label="Tipo de cliente"
+                  value={clientType}
+                  onChange={(e) => setClientType(e.target.value)}
+                  options={clientTypeOptions}
+                />
+              </div>
+              <div className="col-span-12 md:col-span-6">
+                <AccessibleSelect
+                  id="complexity"
+                  label="Complejidad del proyecto"
+                  value={complexity}
+                  onChange={(e) => setComplexity(e.target.value)}
+                  options={complexityOptions}
+                />
               </div>
               <div className="col-span-12 md:col-span-4">
-                <label className="text-xs muted">Tipo de cliente</label>
-                <select value={clientType} onChange={(e) => setClientType(e.target.value)}>
-                  <option value="micro">Micro / Emprendedor</option>
-                  <option value="smb">PYME / Small Business</option>
-                  <option value="mid">Empresa mediana</option>
-                  <option value="enterprise">Gran empresa / Enterprise</option>
-                </select>
-              </div>
-              <div className="col-span-12 md:col-span-4">
-                <label className="text-xs muted">Complejidad</label>
-                <select value={complexity} onChange={(e) => setComplexity(e.target.value)}>
-                  <option value="basic">Básico</option>
-                  <option value="standard">Estándar</option>
-                  <option value="complex">Complejo</option>
-                  <option value="extreme">Muy complejo / Regulado</option>
-                </select>
-              </div>
-              <div className="col-span-12 md:col-span-4">
-                <label className="text-xs muted">Uplift por valor percibido (%)</label>
-                <input
+                <DebouncedInput
+                  label="Uplift por valor percibido (%)"
+                  initialValue={valueUpliftPct}
+                  onValueChange={setValueUpliftPct}
+                  min={0}
+                  max={200}
                   type="number"
-                  min="0"
-                  max="200"
-                  value={valueUpliftPct}
-                  onChange={(e) => setValueUpliftPct(Number(e.target.value))}
                 />
               </div>
 
@@ -401,43 +429,43 @@ export default function App() {
                 <h2 className="text-base font-semibold">Modelo de contratación</h2>
               </div>
               <div className="col-span-12 md:col-span-6">
-                <label className="text-xs muted">Tipo</label>
-                <select value={engagement} onChange={(e) => setEngagement(e.target.value)}>
-                  <option value="freelance">Freelance / Proyecto</option>
-                  <option value="retainer">In‑house partner / Retainer mensual</option>
-                </select>
-              </div>
-              <div className="col-span-12 md:col-span-6">
-                <label className="text-xs muted">Horas/mes (solo retainer)</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="1"
-                  value={retainerHours}
-                  onChange={(e) => setRetainerHours(Number(e.target.value))}
+                <AccessibleSelect
+                  id="engagement"
+                  label="Tipo"
+                  value={engagement}
+                  onChange={(e) => setEngagement(e.target.value)}
+                  options={engagementOptions}
                 />
               </div>
               <div className="col-span-12 md:col-span-6">
-                <label className="text-xs muted">Descuento retainer (%)</label>
-                <input
+                <DebouncedInput
+                  label="Horas/mes (solo retainer)"
+                  initialValue={retainerHours}
+                  onValueChange={setRetainerHours}
+                  min={0}
+                  step={1}
                   type="number"
-                  min="0"
-                  max="60"
-                  value={retainerDiscountPct}
-                  onChange={(e) => setRetainerDiscountPct(Number(e.target.value))}
                 />
-                <div className="muted small mt-1">
-                  Guía: 40h ≈ 10‑15%, 60h ≈ 15‑20%, 80h ≈ 18‑25%.
-                </div>
               </div>
               <div className="col-span-12 md:col-span-6">
-                <label className="text-xs muted">Recargo por urgencia (%)</label>
-                <input
+                <DebouncedInput
+                  label="Descuento retainer (%)"
+                  initialValue={retainerDiscountPct}
+                  onValueChange={setRetainerDiscountPct}
+                  min={0}
+                  max={60}
                   type="number"
-                  min="0"
-                  max="100"
-                  value={rushPct}
-                  onChange={(e) => setRushPct(Number(e.target.value))}
+                  helpText="Guía: 40h ≈ 10‑15%, 60h ≈ 15‑20%, 80h ≈ 18‑25%."
+                />
+              </div>
+              <div className="col-span-12 md:col-span-6">
+                <DebouncedInput
+                  label="Recargo por urgencia (%)"
+                  initialValue={rushPct}
+                  onValueChange={setRushPct}
+                  min={0}
+                  max={100}
+                  type="number"
                 />
               </div>
 
@@ -449,6 +477,9 @@ export default function App() {
                 <button className="btn btn-secondary" onClick={() => exportJson()}>
                   Exportar estimación (JSON)
                 </button>
+                <button className="btn btn-secondary" onClick={() => handleExportPDF()}>
+                  Exportar PDF
+                </button>
               </div>
             </div>
           </div>
@@ -459,32 +490,35 @@ export default function App() {
           <div className="card md:sticky md:top-4">
             <div className="grid grid-cols-12 gap-3">
               <div className="col-span-12">
-                <h2 className="text-base font-semibold">Resultados</h2>
-              </div>
-              <div className="col-span-12 md:col-span-6 kpi">
-                <h3 className="text-sm font-medium mb-1">Horas facturables/año</h3>
-                <div className="text-2xl font-bold">
-                  {Math.round(billableHours)}
-                </div>
-                <div className="small muted">Calculado: semanas × horas/semana × % facturable</div>
-              </div>
-              <div className="col-span-12 md:col-span-6 kpi">
-                <h3 className="text-sm font-medium mb-1">Tarifa base/hora (UI · Research)</h3>
-                <div className="text-2xl font-bold">
-                  {fmtMoney(rateUI, currency)}/h · {fmtMoney(rateUXR, currency)}/h
-                </div>
-                <div className="small muted">
-                  Fórmula: (ingresos + overhead) × (1 + margen) ÷ horas facturables
-                </div>
+                <h2 className="text-lg font-bold mb-3">Resultados</h2>
               </div>
 
-              <div className="col-span-12 kpi">
-                <h3 className="text-sm font-medium mb-1">Tarifa mezclada del proyecto</h3>
-                <div className="text-2xl font-bold">
-                  {fmtMoney(blendedRate, currency)}/h
-                </div>
+              <div className="col-span-12 md:col-span-6 kpi">
+                <h3 className="text-sm font-medium mb-1">Horas facturables/año</h3>
+                <div className="text-2xl font-bold">{Math.round(billableHours)}</div>
                 <div className="small muted">
-                  Promedio ponderado por horas de Research vs UI
+                  {weeks} semanas × {hoursPerWeek} horas × {billablePct}% facturable
+                </div>
+              </div>
+              <div className="col-span-12 md:col-span-6 kpi">
+                <h3 className="text-sm font-medium mb-1">Tarifa base/hora — UI</h3>
+                <div className="text-2xl font-bold">{fmtMoney(rateUI, currency)}/h</div>
+                <div className="small muted">
+                  (Ingresos + overhead) × (1 + margen) ÷ horas facturables
+                </div>
+              </div>
+              <div className="col-span-12 md:col-span-6 kpi">
+                <h3 className="text-sm font-medium mb-1">Tarifa base/hora — Research</h3>
+                <div className="text-2xl font-bold">{fmtMoney(rateUXR, currency)}/h</div>
+                <div className="small muted">
+                  (Ingresos + overhead) × (1 + margen) ÷ horas facturables
+                </div>
+              </div>
+              <div className="col-span-12 md:col-span-6 kpi">
+                <h3 className="text-sm font-medium mb-1">Tarifa combinada del proyecto</h3>
+                <div className="text-2xl font-bold">{fmtMoney(blendedRate, currency)}/h</div>
+                <div className="small muted">
+                  Promedio ponderado según mix de horas UI/Research
                 </div>
               </div>
 
@@ -511,7 +545,7 @@ export default function App() {
                 <h3 className="text-sm font-medium mb-1">Retainer mensual (si corresponde)</h3>
                 <div className="text-2xl font-bold">
                   {engagement === 'retainer' && retainerHours > 0
-                    ? `${fmtMoney(retainerPrice, currency)}  (${Math.round((1 - retainerDisc) * 100)}% de la tarifa)`
+                    ? `${fmtMoney(retainerPrice, currency)}  (${Math.round((1 - retainerDiscountPct/100) * 100)}% de la tarifa)`
                     : '—'}
                 </div>
                 <div className="small muted">
@@ -520,23 +554,30 @@ export default function App() {
               </div>
 
               <div className="col-span-12">
-                <p className="small muted">
-                  Rangos guía por región (personalizables en presets): LATAM ~ 60–100/h · EU Oeste ~ 80–150/h · EU Este ~ 40–80/h · USA ~ 100–200/h.
-                </p>
+                <div className="border-t pt-3 mt-3" style={{ borderColor: 'var(--border)' }}>
+                  <div className="text-sm font-medium mb-1">Horas totales del proyecto</div>
+                  <div className="text-xl font-bold">
+                    {totalProjectHours > 0 ? totalProjectHours : '—'}
+                  </div>
+                  <div className="small muted">
+                    {hoursTotalManual > 0
+                      ? 'Valor ingresado manualmente'
+                      : `${hoursResearch} horas Research + ${hoursUI} horas UI`}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </aside>
       </div>
 
-      {/* Footer */}
       <footer
         className="p-4 border-t"
         style={{ borderColor: 'var(--border)' }}
       >
         <span className="pill mr-2">Sugerencia</span>
         <span className="small muted">
-          Cambia región y luego ajusta ingresos/overhead/margen según tu operación. Usa “Exportar estimación” para guardar tu escenario.
+          Cambia región y luego ajusta ingresos/overhead/margen según tu operación. Usa "Exportar estimación" para guardar tu escenario.
         </span>
       </footer>
     </div>
