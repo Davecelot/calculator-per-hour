@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { PRESETS, retainerSuggestion, CLIENT_MULT, COMPLEXITY_MULT } from './presets.js';
 
 // Import components
@@ -13,6 +13,7 @@ import DevelopmentTimePanel from './components/DevelopmentTimePanel';
 // Import hooks
 import { useRateCalculation } from './hooks/useRateCalculation';
 import { useLocalStorage } from './hooks/useLocalStorage';
+import { useExchangeRates } from './hooks/useExchangeRates';
 import { pdfExport } from './utils/pdfExport';
 
 /**
@@ -48,6 +49,8 @@ export default function App() {
   // Global selectors
   const [region, setRegion] = useState('LATAM');
   const [currency, setCurrency] = useState('USD');
+  const rates = useExchangeRates();
+  const prevCurrency = useRef('USD');
 
   // Business assumptions
   const [uiIncome, setUiIncome] = useState(0);
@@ -98,9 +101,18 @@ export default function App() {
    */
   function applyPreset(key) {
     const p = PRESETS[key] ?? PRESETS.LATAM;
-    setUiIncome(p.uiIncome);
-    setUxrIncome(p.uxrIncome);
-    setOverhead(p.overhead);
+    let ui = p.uiIncome;
+    let uxr = p.uxrIncome;
+    let oh = p.overhead;
+    if (currency !== 'USD' && rates[currency]) {
+      const factor = rates[currency];
+      ui *= factor;
+      uxr *= factor;
+      oh *= factor;
+    }
+    setUiIncome(ui);
+    setUxrIncome(uxr);
+    setOverhead(oh);
     setWeeks(p.weeks);
     setHoursPerWeek(p.hoursPerWeek);
     setBillablePct(p.billablePct);
@@ -120,11 +132,26 @@ export default function App() {
     setRetainerDiscountPct(18);
   }
 
-  // Initialise values when the component mounts and whenever region changes
+  // Initialise values when the component mounts and whenever region or rates change
   useEffect(() => {
     applyPreset(region);
+  }, [region, rates]);
+
+  // Convert numeric values when the currency changes
+  useEffect(() => {
+    const from = prevCurrency.current;
+    const to = currency;
+    if (from === to || !rates[from] || !rates[to]) {
+      prevCurrency.current = to;
+      return;
+    }
+    const factor = rates[to] / rates[from];
+    setUiIncome((v) => v * factor);
+    setUxrIncome((v) => v * factor);
+    setOverhead((v) => v * factor);
+    prevCurrency.current = to;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [region]);
+  }, [currency, rates]);
 
   // Auto-suggest a discount when the retainer hours change and no manual discount was entered
   useEffect(() => {
