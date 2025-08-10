@@ -144,9 +144,12 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 Initialize the component library and add the core UI pieces used in this project:
 
 ```bash
+# point npm at the public registry
+npm config set registry https://registry.npmjs.org/
+
 # set up shadcn/ui
 npx shadcn@latest init
 
 # install common components
-npx shadcn@latest add button input card select slider
+npx shadcn@latest add button input label card select slider tooltip dialog accordion
 ```
