@@ -42,6 +42,16 @@ npm install
 npm run dev
 ```
 
+### Environment Variables
+
+Feature flags can be configured through Vite environment variables:
+
+- `VITE_ENABLE_THEME_TOGGLE` (default `true`, set to `false` to disable)
+- `VITE_ENABLE_EXPORT` (default `true`, set to `false` to disable)
+- `VITE_ENABLE_SAVED_PRESETS` (default `false`, set to `true` to enable)
+
+Create a `.env` file or export the variables in your shell before running the app.
+
 ### Building for Production
 
 ```bash
