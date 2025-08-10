@@ -255,15 +255,13 @@ export default function App() {
   ];
 
   // Validate select changes
-  function handleClientTypeChange(e) {
-    const value = e.target.value;
+  function handleClientTypeChange(value) {
     if (CLIENT_MULT[value] !== undefined) {
       setClientType(value);
     }
   }
 
-  function handleComplexityChange(e) {
-    const value = e.target.value;
+  function handleComplexityChange(value) {
     if (COMPLEXITY_MULT[value] !== undefined) {
       setComplexity(value);
     }
@@ -464,7 +462,7 @@ export default function App() {
                   id="engagement"
                   label="Tipo"
                   value={engagement}
-                  onChange={(e) => setEngagement(e.target.value)}
+                  onChange={setEngagement}
                   options={engagementOptions}
                 />
               </div>
