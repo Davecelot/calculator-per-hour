@@ -1,31 +1,32 @@
 import { useState, useEffect } from 'react';
 
 const lightTheme = {
-  '--bg': '#f5f7fa',
-  '--panel': '#ffffff',
-  '--muted': '#6b7280',
-  '--text': '#1f2937',
-  '--brand': '#7c5cff',
-  '--good': '#2fd17a',
-  '--bad': '#ff7d7d',
-  '--warn': '#ffcd57',
-  '--border': '#e5e7eb',
+  '--bg': '#f1f5f2',
+  '--panel': 'rgba(255,255,255,0.8)',
+  '--muted': '#6b705c',
+  '--text': '#1a1d1a',
+  '--brand': '#4f772d',
+  '--good': '#588157',
+  '--bad': '#bc4749',
+  '--warn': '#e9c46a',
+  '--border': '#b7b7a4',
 };
 
 const darkTheme = {
-  '--bg': '#0f1222',
-  '--panel': '#171a2e',
-  '--muted': '#8b91b4',
-  '--text': '#e7e9f7',
-  '--brand': '#7c5cff',
-  '--good': '#2fd17a',
-  '--bad': '#ff7d7d',
-  '--warn': '#ffcd57',
-  '--border': '#23264a',
+  '--bg': '#1b1d1a',
+  '--panel': 'rgba(40,44,38,0.8)',
+  '--muted': '#a3a69b',
+  '--text': '#e7e9e3',
+  '--brand': '#4f772d',
+  '--good': '#588157',
+  '--bad': '#bc4749',
+  '--warn': '#e9c46a',
+  '--border': '#3f4430',
 };
 
 export function useTheme() {
-  const [isDark, setIsDark] = useState(true);
+  // Use the lighter palette by default
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     // Check for user preference
