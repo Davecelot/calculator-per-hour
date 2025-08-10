@@ -1,6 +1,7 @@
 import React from 'react';
-import { Card } from './ui/card';
+import { BrandCard } from '@/components/brand/BrandCard';
 import { Label } from './ui/label';
+import { BrandSlider } from '@/components/brand/BrandSlider';
 
 export default function DevelopmentTimePanel({ weeks, setWeeks, hoursPerWeek, setHoursPerWeek }) {
   const months = Math.round(weeks / 4);
@@ -9,7 +10,7 @@ export default function DevelopmentTimePanel({ weeks, setWeeks, hoursPerWeek, se
   const progress = (months / 12) * circumference;
 
   return (
-    <Card className="flex flex-col items-center">
+    <BrandCard className="flex flex-col items-center">
       <h2 className="text-lg font-bold mb-4">Tiempo de desarrollo</h2>
       <svg width="120" height="120" className="mb-4">
         <circle cx="60" cy="60" r={radius} stroke="var(--border)" strokeWidth="8" fill="none" />
@@ -34,8 +35,9 @@ export default function DevelopmentTimePanel({ weeks, setWeeks, hoursPerWeek, se
           {months}m
         </text>
       </svg>
-      <Label className="w-full text-center mb-1">Meses</Label>
-      <input
+      <Label htmlFor="months" className="w-full text-center mb-1">Meses</Label>
+      <BrandSlider
+        id="months"
         type="range"
         min="1"
         max="12"
@@ -44,8 +46,11 @@ export default function DevelopmentTimePanel({ weeks, setWeeks, hoursPerWeek, se
         className="w-full mb-4"
         style={{ accentColor: 'var(--brand)' }}
       />
-      <Label className="w-full text-center mb-1">Horas por semana: {hoursPerWeek}</Label>
-      <input
+      <Label htmlFor="hours-per-week" className="w-full text-center mb-1">
+        Horas por semana: {hoursPerWeek}
+      </Label>
+      <BrandSlider
+        id="hours-per-week"
         type="range"
         min="1"
         max="80"
@@ -54,6 +59,6 @@ export default function DevelopmentTimePanel({ weeks, setWeeks, hoursPerWeek, se
         className="w-full"
         style={{ accentColor: 'var(--brand)' }}
       />
-    </Card>
+    </BrandCard>
   );
 }

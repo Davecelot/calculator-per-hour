@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useId } from 'react';
 import { Label } from './ui/label';
-import { Input } from './ui/input';
+import { BrandInput } from '@/components/brand/BrandInput';
 
 export default function ValidatedInput({
   label,
@@ -12,8 +12,11 @@ export default function ValidatedInput({
   type = 'number',
   required = false,
   helpText,
+  id,
 }) {
   const [error, setError] = useState('');
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
 
   const handleChange = (e) => {
     // Preserve the raw string value for validation so that values like "0"
@@ -38,8 +41,9 @@ export default function ValidatedInput({
 
   return (
     <div className="space-y-1">
-      <Label>{label}</Label>
-      <Input
+      <Label htmlFor={inputId}>{label}</Label>
+      <BrandInput
+        id={inputId}
         type={type}
         min={min}
         max={max}
@@ -47,9 +51,14 @@ export default function ValidatedInput({
         value={value}
         onChange={handleChange}
         className={error ? 'border-[var(--bad)]' : ''}
+        aria-describedby={helpText ? `${inputId}-help` : undefined}
       />
       {error && <p className="text-xs text-[var(--bad)]">{error}</p>}
-      {helpText && !error && <p className="text-xs text-[var(--muted)]">{helpText}</p>}
+      {helpText && !error && (
+        <p id={`${inputId}-help`} className="text-xs text-[var(--muted)]">
+          {helpText}
+        </p>
+      )}
     </div>
   );
 }

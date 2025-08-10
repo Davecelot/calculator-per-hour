@@ -1,7 +1,8 @@
 import React from 'react';
-import { Card } from './ui/card';
+import { BrandCard } from '@/components/brand/BrandCard';
 import { Label } from './ui/label';
-import { Input } from './ui/input';
+import { BrandSlider } from '@/components/brand/BrandSlider';
+import { BrandSelect } from '@/components/brand/BrandSelect';
 
 /**
  * Inputs for project mode assumptions.
@@ -18,12 +19,12 @@ export default function ProjectControls({
   setRoundingStep,
 }) {
   return (
-    <Card className="p-4 mt-4">
+    <BrandCard className="p-4 mt-4">
       <h2 className="text-base font-semibold mb-3">Proyecto</h2>
       <div className="space-y-4">
         <div>
           <Label htmlFor="meses">Duración del proyecto (meses)</Label>
-          <Input
+          <BrandSlider
             id="meses"
             type="range"
             min={1}
@@ -40,7 +41,7 @@ export default function ProjectControls({
 
         <div>
           <Label htmlFor="dedicacion">Dedicación al proyecto (%)</Label>
-          <Input
+          <BrandSlider
             id="dedicacion"
             type="range"
             min={10}
@@ -57,34 +58,40 @@ export default function ProjectControls({
 
         <div>
           <Label htmlFor="buffer">Buffer/Riesgo (%)</Label>
-          <select
-            id="buffer"
-            className="mt-1 w-full rounded-md border border-[var(--border)] bg-[var(--panel)] p-2 text-sm"
-            value={buffer}
-            onChange={(e) => setBuffer(parseInt(e.target.value))}
+          <BrandSelect
+            value={buffer.toString()}
+            onValueChange={(v) => setBuffer(parseInt(v))}
           >
-            {[0, 10, 15, 20, 30].map((b) => (
-              <option key={b} value={b}>
-                {b}%
-              </option>
-            ))}
-          </select>
+            <BrandSelect.Trigger id="buffer" className="mt-1 w-full">
+              <BrandSelect.Value />
+            </BrandSelect.Trigger>
+            <BrandSelect.Content>
+              {[0, 10, 15, 20, 30].map((b) => (
+                <BrandSelect.Item key={b} value={b.toString()}>
+                  {b}%
+                </BrandSelect.Item>
+              ))}
+            </BrandSelect.Content>
+          </BrandSelect>
         </div>
 
         <div>
           <Label htmlFor="round">Redondear</Label>
-          <select
-            id="round"
-            className="mt-1 w-full rounded-md border border-[var(--border)] bg-[var(--panel)] p-2 text-sm"
-            value={roundingStep}
-            onChange={(e) => setRoundingStep(parseInt(e.target.value))}
+          <BrandSelect
+            value={roundingStep.toString()}
+            onValueChange={(v) => setRoundingStep(parseInt(v))}
           >
-            <option value={0}>Sin redondeo</option>
-            <option value={100}>a $100</option>
-            <option value={1000}>a $1.000</option>
-          </select>
+            <BrandSelect.Trigger id="round" className="mt-1 w-full">
+              <BrandSelect.Value />
+            </BrandSelect.Trigger>
+            <BrandSelect.Content>
+              <BrandSelect.Item value="0">Sin redondeo</BrandSelect.Item>
+              <BrandSelect.Item value="100">a $100</BrandSelect.Item>
+              <BrandSelect.Item value="1000">a $1.000</BrandSelect.Item>
+            </BrandSelect.Content>
+          </BrandSelect>
         </div>
       </div>
-    </Card>
+    </BrandCard>
   );
 }

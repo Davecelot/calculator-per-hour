@@ -6,8 +6,8 @@ import RegionSelector from '@/components/RegionSelector';
 import DebouncedInput from '@/components/DebouncedInput';
 import AccessibleSelect from '@/components/AccessibleSelect';
 import ThemeToggle from '@/components/ThemeToggle';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { BrandButton } from '@/components/brand/BrandButton';
+import { BrandCard } from '@/components/brand/BrandCard';
 import DevelopmentTimePanel from '@/components/DevelopmentTimePanel';
 import ModeToggle from '@/components/ModeToggle';
 import ProjectControls from '@/components/ProjectControls';
@@ -388,7 +388,7 @@ export default function App() {
               setHoursPerWeek={setHoursPerWeek}
             />
             <section>
-              <Card>
+              <BrandCard>
                 <div className="grid grid-cols-12 gap-3">
               {/* Region and currency selectors */}
               <RegionSelector
@@ -583,18 +583,18 @@ export default function App() {
 
               {/* Buttons */}
               <div className="col-span-12 flex flex-wrap gap-2 mt-2">
-                <Button onClick={() => applyPreset(region)}>
+                <BrandButton onClick={() => applyPreset(region)}>
                   Restablecer presets de la región
-                </Button>
-                <Button variant="secondary" onClick={() => exportJson()}>
+                </BrandButton>
+                <BrandButton variant="secondary" onClick={() => exportJson()}>
                   Exportar estimación (JSON)
-                </Button>
-                <Button variant="secondary" onClick={() => handleExportPDF()}>
+                </BrandButton>
+                <BrandButton variant="secondary" onClick={() => handleExportPDF()}>
                   Exportar PDF
-                </Button>
+                </BrandButton>
               </div>
               </div>
-            </Card>
+              </BrandCard>
           </section>
           {mode === 'project' && (
             <ProjectControls
@@ -612,7 +612,7 @@ export default function App() {
 
         {/* Right: Results */}
         <aside className="md:col-span-1">
-          <Card className="md:sticky md:top-4">
+          <BrandCard className="md:sticky md:top-4">
             <div className="grid grid-cols-12 gap-3">
               <div className="col-span-12">
                 <h2 className="text-lg font-bold mb-3">Resultados</h2>
@@ -737,7 +737,7 @@ export default function App() {
                 </div>
               </div>
             </div>
-          </Card>
+          </BrandCard>
           {mode === 'project' && (
             <div className="mt-4">
               <ProjectResultCard

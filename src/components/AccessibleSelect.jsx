@@ -1,6 +1,6 @@
 import React from 'react';
 import { Label } from './ui/label';
-import { Select } from './ui/select';
+import { BrandSelect } from '@/components/brand/BrandSelect';
 
 export default function AccessibleSelect({
   label,
@@ -13,18 +13,21 @@ export default function AccessibleSelect({
   return (
     <div className="space-y-1">
       <Label htmlFor={id}>{label}</Label>
-      <Select
-        id={id}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        aria-describedby={helpText ? `${id}-help` : undefined}
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </Select>
+      <BrandSelect value={value} onValueChange={onChange}>
+        <BrandSelect.Trigger
+          id={id}
+          aria-describedby={helpText ? `${id}-help` : undefined}
+        >
+          <BrandSelect.Value />
+        </BrandSelect.Trigger>
+        <BrandSelect.Content>
+          {options.map((option) => (
+            <BrandSelect.Item key={option.value} value={option.value}>
+              {option.label}
+            </BrandSelect.Item>
+          ))}
+        </BrandSelect.Content>
+      </BrandSelect>
       {helpText && (
         <p id={`${id}-help`} className="text-xs text-[var(--muted)]">
           {helpText}
