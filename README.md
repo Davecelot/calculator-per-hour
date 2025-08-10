@@ -153,3 +153,11 @@ npx shadcn@latest init
 # install common components
 npx shadcn@latest add button input label card select slider tooltip dialog accordion
 ```
+
+## How to add more Shadcn components
+
+To scaffold additional components from the library run:
+
+```bash
+npx shadcn@latest add <component>
+```
