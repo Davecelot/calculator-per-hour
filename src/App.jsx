@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PRESETS, retainerSuggestion } from './presets.js';
+import { PRESETS, retainerSuggestion, CLIENT_MULT, COMPLEXITY_MULT } from './presets.js';
 
 // Import components
 import RegionSelector from './components/RegionSelector';
@@ -73,6 +73,19 @@ export default function App() {
   const [engagement, setEngagement] = useState('freelance');
   const [retainerHours, setRetainerHours] = useState(60);
   const [retainerDiscountPct, setRetainerDiscountPct] = useState(18);
+
+  // Ensure selected adjusters are valid keys
+  useEffect(() => {
+    if (CLIENT_MULT[clientType] === undefined) {
+      setClientType('smb');
+    }
+  }, [clientType]);
+
+  useEffect(() => {
+    if (COMPLEXITY_MULT[complexity] === undefined) {
+      setComplexity('standard');
+    }
+  }, [complexity]);
 
   /**
    * Apply the preset values for a given region. This function
@@ -221,16 +234,18 @@ export default function App() {
 
   // Client type options for AccessibleSelect
   const clientTypeOptions = [
-    { value: 'startup', label: 'Startup / Emprendimiento' },
-    { value: 'smb', label: 'PyME / Empresa mediana' },
+    { value: 'micro', label: 'Micro / Startup' },
+    { value: 'smb', label: 'PyME' },
+    { value: 'mid', label: 'Empresa mediana' },
     { value: 'enterprise', label: 'Empresa grande / Corporación' },
   ];
 
   // Complexity options for AccessibleSelect
   const complexityOptions = [
-    { value: 'simple', label: 'Simple / Básico' },
+    { value: 'basic', label: 'Básico' },
     { value: 'standard', label: 'Estándar / Promedio' },
     { value: 'complex', label: 'Complejo / Avanzado' },
+    { value: 'extreme', label: 'Extremo / Crítico' },
   ];
 
   // Engagement options for AccessibleSelect
@@ -238,6 +253,21 @@ export default function App() {
     { value: 'freelance', label: 'Freelance / Proyecto' },
     { value: 'retainer', label: 'In‑house partner / Retainer mensual' },
   ];
+
+  // Validate select changes
+  function handleClientTypeChange(e) {
+    const value = e.target.value;
+    if (CLIENT_MULT[value] !== undefined) {
+      setClientType(value);
+    }
+  }
+
+  function handleComplexityChange(e) {
+    const value = e.target.value;
+    if (COMPLEXITY_MULT[value] !== undefined) {
+      setComplexity(value);
+    }
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -401,7 +431,7 @@ export default function App() {
                   id="client-type"
                   label="Tipo de cliente"
                   value={clientType}
-                  onChange={(e) => setClientType(e.target.value)}
+                  onChange={handleClientTypeChange}
                   options={clientTypeOptions}
                 />
               </div>
@@ -410,7 +440,7 @@ export default function App() {
                   id="complexity"
                   label="Complejidad del proyecto"
                   value={complexity}
-                  onChange={(e) => setComplexity(e.target.value)}
+                  onChange={handleComplexityChange}
                   options={complexityOptions}
                 />
               </div>
