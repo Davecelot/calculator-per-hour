@@ -1,5 +1,6 @@
 import { renderHook } from '@testing-library/react-hooks';
 import { useRateCalculation } from './useRateCalculation';
+import { CLIENT_MULT, COMPLEXITY_MULT } from '../presets.js';
 
 describe('useRateCalculation', () => {
   const defaultInputs = {
@@ -33,6 +34,22 @@ describe('useRateCalculation', () => {
     // (60000 + 10000) * 1.2 / 960 = 87.5
     expect(result.current.rateUI).toBeCloseTo(87.5, 1);
     expect(result.current.rateUXR).toBeCloseTo(87.5, 1);
+  });
+
+  test('calculates retainer price with discount and multipliers', () => {
+    const retainerInputs = { ...defaultInputs, engagement: 'retainer' };
+    const { result } = renderHook(() => useRateCalculation(retainerInputs));
+
+    const expectedAdjusted =
+      result.current.blendedRate *
+      (1 + CLIENT_MULT[retainerInputs.clientType] + COMPLEXITY_MULT[retainerInputs.complexity]);
+    expect(result.current.adjustedRate).toBeCloseTo(expectedAdjusted, 2);
+
+    const expectedRetainer =
+      retainerInputs.retainerHours *
+      expectedAdjusted *
+      (1 - retainerInputs.retainerDiscountPct / 100);
+    expect(result.current.retainerPrice).toBeCloseTo(expectedRetainer, 2);
   });
 
   // Add more tests for other calculations
