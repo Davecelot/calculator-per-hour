@@ -6,10 +6,13 @@ export const config = {
   defaultCurrency: import.meta.env.VITE_DEFAULT_CURRENCY || 'USD',
   // Default region
   defaultRegion: import.meta.env.VITE_DEFAULT_REGION || 'LATAM',
-  // Feature flags
+  // Feature flags controlled via environment variables
   features: {
-    enableThemeToggle: import.meta.env.VITE_ENABLE_THEME_TOGGLE === 'true' || true,
-    enableExport: import.meta.env.VITE_ENABLE_EXPORT === 'true' || true,
-    enableSavedPresets: import.meta.env.VITE_ENABLE_SAVED_PRESETS === 'true' || false,
+    // Enabled by default; set VITE_ENABLE_THEME_TOGGLE="false" to disable
+    enableThemeToggle: import.meta.env.VITE_ENABLE_THEME_TOGGLE !== 'false',
+    // Enabled by default; set VITE_ENABLE_EXPORT="false" to disable
+    enableExport: import.meta.env.VITE_ENABLE_EXPORT !== 'false',
+    // Disabled by default; set VITE_ENABLE_SAVED_PRESETS="true" to enable
+    enableSavedPresets: import.meta.env.VITE_ENABLE_SAVED_PRESETS === 'true',
   },
 };

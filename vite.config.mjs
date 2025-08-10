@@ -29,4 +29,8 @@ export default defineConfig({
     }),
   ],
   base: '/calculator-per-hour/',
+  test: {
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.js',
+  },
 })
