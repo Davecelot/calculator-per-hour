@@ -1,11 +1,5 @@
 import React from 'react';
-
-function formatCurrency(value, currency) {
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency,
-  }).format(value);
-}
+import { formatCurrency } from '@/utils/format';
 
 /**
  * Collapsible section with calculation details.

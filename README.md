@@ -12,7 +12,6 @@ A React application for calculating hourly rates and project costs for UI/UX pro
 - Real-time currency conversion with up-to-date exchange rates
 - Export functionality for saving calculations (JSON and PDF)
 - Responsive design for all devices
-- Dark/Light theme toggle
 - Accessibility improvements with ARIA attributes
 - Performance optimizations with debounced inputs
 
@@ -61,11 +60,9 @@ src/
 │   ├── DebouncedInput.jsx
 │   ├── AccessibleSelect.jsx
 │   ├── RegionSelector.jsx
-│   ├── ThemeToggle.jsx
 ├── hooks/
 │   ├── useRateCalculation.js
 │   ├── useDebounce.js
-│   ├── useTheme.js
 ├── utils/
 │   ├── pdfExport.js
 ├── App.jsx
@@ -84,8 +81,6 @@ An accessible dropdown component with proper ARIA attributes for improved access
 ### RegionSelector
 Handles region and currency selection with predefined options.
 
-### ThemeToggle
-Provides a toggle button for switching between dark and light themes.
 
 ## Custom Hooks
 
@@ -95,8 +90,6 @@ Centralizes all rate calculation logic, including billable hours, base rates, bl
 ### useDebounce
 Provides debouncing functionality to optimize performance for input fields.
 
-### useTheme
-Manages theme state and applies theme styles to the document.
 
 ## Utilities
 

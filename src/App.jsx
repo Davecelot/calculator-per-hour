@@ -5,7 +5,6 @@ import { PRESETS, retainerSuggestion, CLIENT_MULT, COMPLEXITY_MULT } from './pre
 import RegionSelector from '@/components/RegionSelector';
 import DebouncedInput from '@/components/DebouncedInput';
 import AccessibleSelect from '@/components/AccessibleSelect';
-import ThemeToggle from '@/components/ThemeToggle';
 import { BrandButton } from '@/components/brand/BrandButton';
 import { BrandCard } from '@/components/brand/BrandCard';
 import DevelopmentTimePanel from '@/components/DevelopmentTimePanel';
@@ -17,6 +16,7 @@ import ProjectResultCard from '@/components/ProjectResultCard';
 import { useRateCalculation } from '@/hooks/useRateCalculation';
 import { useExchangeRates } from '@/hooks/useExchangeRates';
 import { pdfExport } from '@/utils/pdfExport';
+import { formatCurrency } from '@/utils/format';
 import { computeAnnualTarget } from '@/lib/pricing/annual';
 import {
   computeProjectByHours,
@@ -24,29 +24,6 @@ import {
   roundTo,
 } from '@/lib/pricing/project';
 
-/**
- * Format a numeric value as a currency string. Uses the chosen
- * currency to select an appropriate symbol and rounds to two
- * decimal places. Thousands separators are inserted for
- * readability.
- *
- * @param {number} value The numeric value to format
- * @param {string} currency The currency code (USD, EUR, ARS, GBP)
- * @returns {string} A formatted currency string
- */
-function fmtMoney(value, currency) {
-  if (!Number.isFinite(value)) return '—';
-  const symbol =
-    currency === 'EUR'
-      ? '€'
-      : currency === 'ARS'
-      ? '$'
-      : currency === 'GBP'
-      ? '£'
-      : '$';
-  const rounded = Math.round(value * 100) / 100;
-  return symbol + rounded.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
 
 /**
  * The main component renders a responsive form on the left and
@@ -362,7 +339,7 @@ export default function App() {
     <div className="min-h-screen flex flex-col">
       {/* Header */}
       <header
-        className="p-5 border-b flex justify-between items-center"
+        className="p-5 border-b flex items-center"
         style={{
           borderColor: 'var(--border)',
           background: 'linear-gradient(180deg, rgba(124,92,255,0.12), transparent)',
@@ -374,7 +351,6 @@ export default function App() {
           </h1>
           <ModeToggle mode={mode} onChange={setMode} />
         </div>
-        <ThemeToggle />
       </header>
 
       <div className="flex-grow p-4">
@@ -636,7 +612,7 @@ export default function App() {
               </div>
               <div className="col-span-12 md:col-span-6 kpi">
                 <h3 className="text-sm font-medium mb-1">Tarifa base/hora — UI</h3>
-                <div className="text-2xl font-bold">{fmtMoney(rateUI, currency)}/h</div>
+                <div className="text-2xl font-bold">{formatCurrency(rateUI, currency)}/h</div>
                 <div className="w-full bg-[var(--panel)] rounded-full h-2 mt-1">
                   <div
                     className="h-2 rounded-full"
@@ -652,7 +628,7 @@ export default function App() {
               </div>
               <div className="col-span-12 md:col-span-6 kpi">
                 <h3 className="text-sm font-medium mb-1">Tarifa base/hora — Research</h3>
-                <div className="text-2xl font-bold">{fmtMoney(rateUXR, currency)}/h</div>
+                <div className="text-2xl font-bold">{formatCurrency(rateUXR, currency)}/h</div>
                 <div className="w-full bg-[var(--panel)] rounded-full h-2 mt-1">
                   <div
                     className="h-2 rounded-full"
@@ -668,7 +644,7 @@ export default function App() {
               </div>
               <div className="col-span-12 md:col-span-6 kpi">
                 <h3 className="text-sm font-medium mb-1">Tarifa combinada del proyecto</h3>
-                <div className="text-2xl font-bold">{fmtMoney(blendedRate, currency)}/h</div>
+                <div className="text-2xl font-bold">{formatCurrency(blendedRate, currency)}/h</div>
                 <div className="w-full bg-[var(--panel)] rounded-full h-2 mt-1">
                   <div
                     className="h-2 rounded-full"
@@ -686,7 +662,7 @@ export default function App() {
               <div className="col-span-12 md:col-span-6 kpi">
                 <h3 className="text-sm font-medium mb-1">Tarifa ajustada/hora</h3>
                 <div className="text-2xl font-bold">
-                  {fmtMoney(adjustedRate, currency)}/h
+                  {formatCurrency(adjustedRate, currency)}/h
                 </div>
                 <div className="w-full bg-[var(--panel)] rounded-full h-2 mt-1">
                   <div
@@ -704,7 +680,7 @@ export default function App() {
               <div className="col-span-12 md:col-span-6 kpi">
                 <h3 className="text-sm font-medium mb-1">Precio fijo estimado</h3>
                 <div className="text-2xl font-bold">
-                  {totalProjectHours > 0 ? fmtMoney(fixedPrice, currency) : '—'}
+                  {totalProjectHours > 0 ? formatCurrency(fixedPrice, currency) : '—'}
                 </div>
                 <div className="small muted">
                   (Horas de proyecto) × tarifa ajustada × (1 + contingencia)
@@ -715,7 +691,7 @@ export default function App() {
                 <h3 className="text-sm font-medium mb-1">Retainer mensual (si corresponde)</h3>
                 <div className="text-2xl font-bold">
                   {engagement === 'retainer' && retainerHours > 0
-                    ? `${fmtMoney(retainerPrice, currency)}  (${Math.round((1 - retainerDiscountPct/100) * 100)}% de la tarifa)`
+                    ? `${formatCurrency(retainerPrice, currency)}  (${Math.round((1 - retainerDiscountPct/100) * 100)}% de la tarifa)`
                     : '—'}
                 </div>
                 <div className="small muted">
