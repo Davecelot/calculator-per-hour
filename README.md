@@ -26,10 +26,10 @@ A React application for calculating hourly rates and project costs for UI/UX pro
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/valor-hora-react.git
+git clone https://github.com/davecelot/calculator-per-hour.git
 
 # Navigate to the project directory
-cd valor-hora-react
+cd calculator-per-hour
 
 # Install dependencies
 npm install
