@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { PRESETS, retainerSuggestion, CLIENT_MULT, COMPLEXITY_MULT } from './presets.js';
 
 // Import components
@@ -9,12 +9,21 @@ import ThemeToggle from './components/ThemeToggle';
 import { Button } from './components/ui/button';
 import { Card } from './components/ui/card';
 import DevelopmentTimePanel from './components/DevelopmentTimePanel';
+import ModeToggle from './components/ModeToggle';
+import ProjectControls from './components/ProjectControls';
+import ProjectResultCard from './components/ProjectResultCard';
 
 // Import hooks
 import { useRateCalculation } from './hooks/useRateCalculation';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useExchangeRates } from './hooks/useExchangeRates';
 import { pdfExport } from './utils/pdfExport';
+import { computeAnnualTarget } from './lib/pricing/annual';
+import {
+  computeProjectByHours,
+  computeProjectByProrate,
+  roundTo,
+} from './lib/pricing/project';
 
 /**
  * Format a numeric value as a currency string. Uses the chosen
@@ -77,6 +86,13 @@ export default function App() {
   const [engagement, setEngagement] = useState('freelance');
   const [retainerHours, setRetainerHours] = useState(60);
   const [retainerDiscountPct, setRetainerDiscountPct] = useState(18);
+
+  // Mode and project-specific state
+  const [mode, setMode] = useState('annual');
+  const [mesesProyecto, setMesesProyecto] = useState(4);
+  const [dedicacionPct, setDedicacionPct] = useState(50);
+  const [bufferPct, setBufferPct] = useState(20);
+  const [roundingStep, setRoundingStep] = useState(0);
 
   // Ensure selected adjusters are valid keys
   useEffect(() => {
@@ -198,6 +214,51 @@ export default function App() {
   const maxRate = Math.max(rateUI, rateUXR, adjustedRate);
   const maxHours = 52 * 40;
 
+  // Annual target and project price calculations
+  const { ingresoAnualRequerido, tarifaHora } = useMemo(
+    () =>
+      computeAnnualTarget({
+        sueldos: uiIncome + uxrIncome,
+        overhead,
+        margenProfitPct: marginPct,
+        semanasAnio: weeks,
+        horasSemana: hoursPerWeek,
+        utilizacion: billablePct,
+      }),
+    [uiIncome, uxrIncome, overhead, marginPct, weeks, hoursPerWeek, billablePct]
+  );
+
+  const projectHours = useMemo(
+    () =>
+      computeProjectByHours({
+        tarifaHora,
+        semanasAnio: weeks,
+        horasSemana: hoursPerWeek,
+        meses: mesesProyecto,
+        dedicacion: dedicacionPct,
+        buffer: bufferPct,
+      }),
+    [tarifaHora, weeks, hoursPerWeek, mesesProyecto, dedicacionPct, bufferPct]
+  );
+
+  const projectProrate = useMemo(
+    () =>
+      computeProjectByProrate({
+        ingresoAnualRequerido,
+        meses: mesesProyecto,
+        dedicacion: dedicacionPct,
+        utilizacion: billablePct,
+        buffer: bufferPct,
+      }),
+    [ingresoAnualRequerido, mesesProyecto, dedicacionPct, billablePct, bufferPct]
+  );
+
+  const precioFinal = roundTo(projectProrate.precioFinal, roundingStep);
+  const tarifaEfectiva =
+    projectHours.horasProyecto > 0
+      ? precioFinal / projectHours.horasProyecto
+      : 0;
+
   // Export the current estimation to a JSON file for download
   function exportJson() {
     const data = {
@@ -308,9 +369,12 @@ export default function App() {
           background: 'linear-gradient(180deg, rgba(124,92,255,0.12), transparent)',
         }}
       >
-        <h1 className="m-0 text-xl sm:text-2xl md:text-3xl font-bold">
-          Conversor de tarifas (editable) — No‑Code / UI &amp; Research
-        </h1>
+        <div className="flex items-center gap-4">
+          <h1 className="m-0 text-xl sm:text-2xl md:text-3xl font-bold">
+            Conversor de tarifas (editable) — No‑Code / UI &amp; Research
+          </h1>
+          <ModeToggle mode={mode} onChange={setMode} />
+        </div>
         <ThemeToggle />
       </header>
 
@@ -533,6 +597,18 @@ export default function App() {
               </div>
             </Card>
           </section>
+          {mode === 'project' && (
+            <ProjectControls
+              meses={mesesProyecto}
+              setMeses={setMesesProyecto}
+              dedicacion={dedicacionPct}
+              setDedicacion={setDedicacionPct}
+              buffer={bufferPct}
+              setBuffer={setBufferPct}
+              roundingStep={roundingStep}
+              setRoundingStep={setRoundingStep}
+            />
+          )}
         </div>
 
         {/* Right: Results */}
@@ -663,6 +739,21 @@ export default function App() {
               </div>
             </div>
           </Card>
+          {mode === 'project' && (
+            <div className="mt-4">
+              <ProjectResultCard
+                currency={currency}
+                tarifaHora={tarifaHora}
+                horasProyecto={projectHours.horasProyecto}
+                precioFinal={precioFinal}
+                tarifaEfectiva={tarifaEfectiva}
+                semanasProyecto={projectHours.semanasProyecto}
+                utilizacion={billablePct}
+                precioBaseA={projectHours.precioBase}
+                precioBaseB={projectProrate.precioBase}
+              />
+            </div>
+          )}
         </aside>
       </div>
       </div>
