@@ -1,13 +1,7 @@
 import React from 'react';
 import { Card } from './ui/card';
 import BreakdownAccordion from './BreakdownAccordion';
-
-function formatCurrency(value, currency) {
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency,
-  }).format(value);
-}
+import { formatCurrency } from '@/utils/format';
 
 /**
  * Displays project pricing results.
