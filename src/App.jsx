@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { PRESETS, retainerSuggestion } from './presets.js';
-import clsx from 'clsx';
 
 // Import components
 import RegionSelector from './components/RegionSelector';
 import DebouncedInput from './components/DebouncedInput';
 import AccessibleSelect from './components/AccessibleSelect';
 import ThemeToggle from './components/ThemeToggle';
+import { Button } from './components/ui/button';
+import { Card } from './components/ui/card';
 
 // Import hooks
 import { useRateCalculation } from './hooks/useRateCalculation';
@@ -257,7 +258,7 @@ export default function App() {
       <div className="flex-grow flex flex-col md:flex-row">
         {/* Left: Form */}
         <section className="w-full md:w-7/12 p-4">
-          <div className="card">
+          <Card>
             <div className="grid grid-cols-12 gap-3">
               {/* Region and currency selectors */}
               <RegionSelector 
@@ -471,23 +472,23 @@ export default function App() {
 
               {/* Buttons */}
               <div className="col-span-12 flex flex-wrap gap-2 mt-2">
-                <button className="btn" onClick={() => applyPreset(region)}>
+                <Button onClick={() => applyPreset(region)}>
                   Restablecer presets de la región
-                </button>
-                <button className="btn btn-secondary" onClick={() => exportJson()}>
+                </Button>
+                <Button variant="secondary" onClick={() => exportJson()}>
                   Exportar estimación (JSON)
-                </button>
-                <button className="btn btn-secondary" onClick={() => handleExportPDF()}>
+                </Button>
+                <Button variant="secondary" onClick={() => handleExportPDF()}>
                   Exportar PDF
-                </button>
+                </Button>
               </div>
             </div>
-          </div>
+          </Card>
         </section>
 
         {/* Right: Results */}
         <aside className="w-full md:w-5/12">
-          <div className="card md:sticky md:top-4">
+          <Card className="md:sticky md:top-4">
             <div className="grid grid-cols-12 gap-3">
               <div className="col-span-12">
                 <h2 className="text-lg font-bold mb-3">Resultados</h2>
@@ -567,7 +568,7 @@ export default function App() {
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
         </aside>
       </div>
 

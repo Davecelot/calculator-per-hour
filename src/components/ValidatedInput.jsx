@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Label } from './ui/label';
+import { Input } from './ui/input';
 
 export default function ValidatedInput({
   label,
@@ -35,19 +37,19 @@ export default function ValidatedInput({
   };
 
   return (
-    <div className="input-group">
-      <label className="text-xs muted">{label}</label>
-      <input
+    <div className="space-y-1">
+      <Label>{label}</Label>
+      <Input
         type={type}
         min={min}
         max={max}
         step={step}
         value={value}
         onChange={handleChange}
-        className={error ? 'error' : ''}
+        className={error ? 'border-[var(--bad)]' : ''}
       />
-      {error && <div className="error-text text-xs">{error}</div>}
-      {helpText && !error && <div className="muted small mt-1">{helpText}</div>}
+      {error && <p className="text-xs text-[var(--bad)]">{error}</p>}
+      {helpText && !error && <p className="text-xs text-[var(--muted)]">{helpText}</p>}
     </div>
   );
 }

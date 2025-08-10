@@ -1,28 +1,36 @@
 import React from 'react';
+import AccessibleSelect from './AccessibleSelect';
 
 export default function RegionSelector({ region, setRegion, currency, setCurrency }) {
   return (
     <>
       <div className="col-span-12 md:col-span-6">
-        <label className="text-xs muted">Región (preset)</label>
-        <select
+        <AccessibleSelect
+          label="Región (preset)"
+          id="region"
           value={region}
-          onChange={(e) => setRegion(e.target.value)}
-        >
-          <option value="LATAM">Latinoamérica (preset)</option>
-          <option value="EU_WEST">Europa Occidental (preset)</option>
-          <option value="EU_EAST">Europa del Este (preset)</option>
-          <option value="USA">USA / Canadá (preset)</option>
-        </select>
+          onChange={setRegion}
+          options={[
+            { value: 'LATAM', label: 'Latinoamérica (preset)' },
+            { value: 'EU_WEST', label: 'Europa Occidental (preset)' },
+            { value: 'EU_EAST', label: 'Europa del Este (preset)' },
+            { value: 'USA', label: 'USA / Canadá (preset)' }
+          ]}
+        />
       </div>
       <div className="col-span-12 md:col-span-6">
-        <label className="text-xs muted">Moneda (solo visual)</label>
-        <select value={currency} onChange={(e) => setCurrency(e.target.value)}>
-          <option value="USD">USD ($)</option>
-          <option value="EUR">EUR (€)</option>
-          <option value="ARS">ARS ($)</option>
-          <option value="GBP">GBP (£)</option>
-        </select>
+        <AccessibleSelect
+          label="Moneda (solo visual)"
+          id="currency"
+          value={currency}
+          onChange={setCurrency}
+          options={[
+            { value: 'USD', label: 'USD ($)' },
+            { value: 'EUR', label: 'EUR (€)' },
+            { value: 'ARS', label: 'ARS ($)' },
+            { value: 'GBP', label: 'GBP (£)' }
+          ]}
+        />
       </div>
     </>
   );

@@ -1,4 +1,6 @@
 import React from 'react';
+import { Label } from './ui/label';
+import { Select } from './ui/select';
 
 export default function AccessibleSelect({
   label,
@@ -9,14 +11,12 @@ export default function AccessibleSelect({
   helpText,
 }) {
   return (
-    <div className="form-group">
-      <label htmlFor={id} className="text-xs muted">
-        {label}
-      </label>
-      <select
+    <div className="space-y-1">
+      <Label htmlFor={id}>{label}</Label>
+      <Select
         id={id}
         value={value}
-        onChange={onChange}
+        onChange={(e) => onChange(e.target.value)}
         aria-describedby={helpText ? `${id}-help` : undefined}
       >
         {options.map((option) => (
@@ -24,11 +24,11 @@ export default function AccessibleSelect({
             {option.label}
           </option>
         ))}
-      </select>
+      </Select>
       {helpText && (
-        <div id={`${id}-help`} className="muted small mt-1">
+        <p id={`${id}-help`} className="text-xs text-[var(--muted)]">
           {helpText}
-        </div>
+        </p>
       )}
     </div>
   );
