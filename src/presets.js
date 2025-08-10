@@ -10,7 +10,7 @@ export const PRESETS = {
   LATAM: {
     uiIncome: 60000, // Suggested annual income (USD) for a senior UI designer
     uxrIncome: 60000, // Suggested annual income (USD) for a senior researcher
-    overhead: 10000, // Licences, equipment, marketing per person
+    overhead: 10000, // Licenses, equipment, marketing per person
     weeks: 48,
     hoursPerWeek: 40,
     billablePct: 50, // ≈ 960–1000 h/year (taking into account non‑billable work)
