@@ -138,3 +138,15 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Shadcn UI
+
+Initialize the component library and add the core UI pieces used in this project:
+
+```bash
+# set up shadcn/ui
+npx shadcn@latest init
+
+# install common components
+npx shadcn@latest add button input card select slider
+```
