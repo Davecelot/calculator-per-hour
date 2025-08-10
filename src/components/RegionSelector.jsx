@@ -20,7 +20,7 @@ export default function RegionSelector({ region, setRegion, currency, setCurrenc
       </div>
       <div className="col-span-12 md:col-span-6">
         <AccessibleSelect
-          label="Moneda (solo visual)"
+          label="Moneda"
           id="currency"
           value={currency}
           onChange={setCurrency}
