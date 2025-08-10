@@ -289,16 +289,23 @@ export default function App() {
 
       <div className="flex-grow p-4">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {/* Left: Form */}
-          <section className="md:col-span-1 lg:col-span-2">
-            <Card>
-              <div className="grid grid-cols-12 gap-3">
+          {/* Left: Development time and form */}
+          <div className="md:col-span-1 lg:col-span-2 flex flex-col gap-4">
+            <DevelopmentTimePanel
+              weeks={weeks}
+              setWeeks={setWeeks}
+              hoursPerWeek={hoursPerWeek}
+              setHoursPerWeek={setHoursPerWeek}
+            />
+            <section>
+              <Card>
+                <div className="grid grid-cols-12 gap-3">
               {/* Region and currency selectors */}
-              <RegionSelector 
-                region={region} 
-                setRegion={setRegion} 
-                currency={currency} 
-                setCurrency={setCurrency} 
+              <RegionSelector
+                region={region}
+                setRegion={setRegion}
+                currency={currency}
+                setCurrency={setCurrency}
               />
 
               {/* Business assumptions */}
@@ -496,9 +503,10 @@ export default function App() {
                   Exportar PDF
                 </Button>
               </div>
-            </div>
-          </Card>
-        </section>
+              </div>
+            </Card>
+          </section>
+        </div>
 
         {/* Right: Results */}
         <aside className="md:col-span-1">
@@ -629,16 +637,8 @@ export default function App() {
             </div>
           </Card>
         </aside>
-        <div className="md:col-span-2 lg:col-span-1 lg:col-start-3">
-          <DevelopmentTimePanel
-            weeks={weeks}
-            setWeeks={setWeeks}
-            hoursPerWeek={hoursPerWeek}
-            setHoursPerWeek={setHoursPerWeek}
-          />
-        </div>
       </div>
-    </div>
+      </div>
 
     <footer
       className="p-4 border-t"
