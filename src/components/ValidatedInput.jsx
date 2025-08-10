@@ -14,10 +14,14 @@ export default function ValidatedInput({
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
-    const newValue = type === 'number' ? Number(e.target.value) : e.target.value;
-    
+    // Preserve the raw string value for validation so that values like "0"
+    // don't get treated as falsy when checking the required constraint.
+    const rawValue = e.target.value;
+    const newValue = type === 'number' ? Number(rawValue) : rawValue;
+
     // Validation
-    if (required && !newValue) {
+    if (required && rawValue === '') {
+      // A value is required and the input is empty
       setError('Este campo es obligatorio');
     } else if (type === 'number' && min !== undefined && newValue < min) {
       setError(`El valor mínimo es ${min}`);
