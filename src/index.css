@@ -2,20 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Define CSS variables to mirror the original dark theme used in the
-   HTML version of the calculator. These variables will be used by
-   our components to style backgrounds, borders and text colours.
-*/
+/* Define CSS variables for a lighter, nature inspired palette. These
+   variables power the Shadcn components and keep colours consistent
+   across the app. Greens and olives give the calculator a friendlier
+   feel compared to the previous dark theme. */
 :root {
-  --bg: #0f1222;
-  --panel: #171a2e;
-  --muted: #8b91b4;
-  --text: #e7e9f7;
-  --brand: #7c5cff;
-  --good: #2fd17a;
-  --bad: #ff7d7d;
-  --warn: #ffcd57;
-  --border: #23264a;
+  /* soft green background */
+  --bg: #f1f5f2;
+  /* translucent panel for a subtle glass effect */
+  --panel: rgba(255, 255, 255, 0.8);
+  /* muted olive for secondary text */
+  --muted: #6b705c;
+  /* main text colour */
+  --text: #1a1d1a;
+  /* brand accent */
+  --brand: #4f772d;
+  /* semantic colours */
+  --good: #588157;
+  --bad: #bc4749;
+  --warn: #e9c46a;
+  /* light olive border */
+  --border: #b7b7a4;
 }
 
 * {
@@ -34,6 +41,7 @@ body {
    reused in JSX via className to keep the markup concise. */
 .card {
   background: var(--panel);
+  backdrop-filter: blur(6px);
   border: 1px solid var(--border);
   border-radius: 0.875rem; /* 14px */
   padding: 1rem; /* 16px */
@@ -42,7 +50,8 @@ body {
   padding: 0.875rem; /* 14px */
   border: 1px dashed var(--border);
   border-radius: 0.75rem; /* 12px */
-  background: rgba(124, 92, 255, 0.07);
+  /* faint brand tint */
+  background: rgba(79, 119, 45, 0.07);
 }
 .btn {
   background: var(--brand);
@@ -54,7 +63,7 @@ body {
   text-align: center;
 }
 .btn-secondary {
-  background: #0b0e20;
+  background: var(--panel);
   color: var(--text);
   border: 1px solid var(--border);
 }
@@ -67,7 +76,7 @@ body {
 .pill {
   display: inline-block;
   padding: 0.375rem 0.625rem; /* 6px 10px */
-  background: #0b0e20;
+  background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 9999px;
   font-size: 0.75rem;
@@ -84,7 +93,7 @@ select {
   padding: 0.625rem 0.75rem; /* 10px 12px */
   border-radius: 0.625rem; /* 10px */
   border: 1px solid var(--border);
-  background: #0b0e20;
+  background: var(--panel);
   color: var(--text);
   outline: none;
 }
