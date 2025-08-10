@@ -8,6 +8,8 @@ import AccessibleSelect from './components/AccessibleSelect';
 import ThemeToggle from './components/ThemeToggle';
 import { Button } from './components/ui/button';
 import { Card } from './components/ui/card';
+import MarketTrends from './components/MarketTrends';
+import DevelopmentTimePanel from './components/DevelopmentTimePanel';
 
 // Import hooks
 import { useRateCalculation } from './hooks/useRateCalculation';
@@ -167,6 +169,9 @@ export default function App() {
     retainerDiscountPct,
   });
 
+  const maxRate = Math.max(rateUI, rateUXR, adjustedRate);
+  const maxHours = 52 * 40;
+
   // Export the current estimation to a JSON file for download
   function exportJson() {
     const data = {
@@ -285,11 +290,12 @@ export default function App() {
         <ThemeToggle />
       </header>
 
-      <div className="flex-grow flex flex-col md:flex-row">
-        {/* Left: Form */}
-        <section className="w-full md:w-7/12 p-4">
-          <Card>
-            <div className="grid grid-cols-12 gap-3">
+      <div className="flex-grow p-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {/* Left: Form */}
+          <section>
+            <Card>
+              <div className="grid grid-cols-12 gap-3">
               {/* Region and currency selectors */}
               <RegionSelector 
                 region={region} 
@@ -333,26 +339,7 @@ export default function App() {
                 />
               </div>
 
-              <div className="col-span-12 md:col-span-4">
-                <DebouncedInput
-                  label="Semanas trabajadas/año"
-                  initialValue={weeks}
-                  onValueChange={setWeeks}
-                  min={1}
-                  max={52}
-                  type="number"
-                />
-              </div>
-              <div className="col-span-12 md:col-span-4">
-                <DebouncedInput
-                  label="Horas trabajadas/semana"
-                  initialValue={hoursPerWeek}
-                  onValueChange={setHoursPerWeek}
-                  min={1}
-                  max={80}
-                  type="number"
-                />
-              </div>
+                {/* Semanas y horas por semana se gestionan en el panel de tiempo de desarrollo */}
               <div className="col-span-12 md:col-span-4">
                 <DebouncedInput
                   label="% de horas facturables"
@@ -527,6 +514,15 @@ export default function App() {
               <div className="col-span-12 md:col-span-6 kpi">
                 <h3 className="text-sm font-medium mb-1">Horas facturables/año</h3>
                 <div className="text-2xl font-bold">{Math.round(billableHours)}</div>
+                <div className="w-full bg-[var(--panel)] rounded-full h-2 mt-1">
+                  <div
+                    className="h-2 rounded-full"
+                    style={{
+                      width: `${Math.min((billableHours / maxHours) * 100, 100)}%`,
+                      background: 'var(--brand)',
+                    }}
+                  />
+                </div>
                 <div className="small muted">
                   {weeks} semanas × {hoursPerWeek} horas × {billablePct}% facturable
                 </div>
@@ -534,6 +530,15 @@ export default function App() {
               <div className="col-span-12 md:col-span-6 kpi">
                 <h3 className="text-sm font-medium mb-1">Tarifa base/hora — UI</h3>
                 <div className="text-2xl font-bold">{fmtMoney(rateUI, currency)}/h</div>
+                <div className="w-full bg-[var(--panel)] rounded-full h-2 mt-1">
+                  <div
+                    className="h-2 rounded-full"
+                    style={{
+                      width: `${Math.min((rateUI / maxRate) * 100, 100)}%`,
+                      background: 'var(--brand)',
+                    }}
+                  />
+                </div>
                 <div className="small muted">
                   (Ingresos + overhead) × (1 + margen) ÷ horas facturables
                 </div>
@@ -541,6 +546,15 @@ export default function App() {
               <div className="col-span-12 md:col-span-6 kpi">
                 <h3 className="text-sm font-medium mb-1">Tarifa base/hora — Research</h3>
                 <div className="text-2xl font-bold">{fmtMoney(rateUXR, currency)}/h</div>
+                <div className="w-full bg-[var(--panel)] rounded-full h-2 mt-1">
+                  <div
+                    className="h-2 rounded-full"
+                    style={{
+                      width: `${Math.min((rateUXR / maxRate) * 100, 100)}%`,
+                      background: 'var(--brand)',
+                    }}
+                  />
+                </div>
                 <div className="small muted">
                   (Ingresos + overhead) × (1 + margen) ÷ horas facturables
                 </div>
@@ -548,6 +562,15 @@ export default function App() {
               <div className="col-span-12 md:col-span-6 kpi">
                 <h3 className="text-sm font-medium mb-1">Tarifa combinada del proyecto</h3>
                 <div className="text-2xl font-bold">{fmtMoney(blendedRate, currency)}/h</div>
+                <div className="w-full bg-[var(--panel)] rounded-full h-2 mt-1">
+                  <div
+                    className="h-2 rounded-full"
+                    style={{
+                      width: `${Math.min((blendedRate / maxRate) * 100, 100)}%`,
+                      background: 'var(--brand)',
+                    }}
+                  />
+                </div>
                 <div className="small muted">
                   Promedio ponderado según mix de horas UI/Research
                 </div>
@@ -557,6 +580,15 @@ export default function App() {
                 <h3 className="text-sm font-medium mb-1">Tarifa ajustada/hora</h3>
                 <div className="text-2xl font-bold">
                   {fmtMoney(adjustedRate, currency)}/h
+                </div>
+                <div className="w-full bg-[var(--panel)] rounded-full h-2 mt-1">
+                  <div
+                    className="h-2 rounded-full"
+                    style={{
+                      width: `${Math.min((adjustedRate / maxRate) * 100, 100)}%`,
+                      background: 'var(--brand)',
+                    }}
+                  />
                 </div>
                 <div className="small muted">
                   Aplica cliente, complejidad, valor, urgencia
@@ -600,12 +632,22 @@ export default function App() {
             </div>
           </Card>
         </aside>
+        <div className="flex flex-col gap-4">
+          <MarketTrends />
+          <DevelopmentTimePanel
+            weeks={weeks}
+            setWeeks={setWeeks}
+            hoursPerWeek={hoursPerWeek}
+            setHoursPerWeek={setHoursPerWeek}
+          />
+        </div>
       </div>
+    </div>
 
-      <footer
-        className="p-4 border-t"
-        style={{ borderColor: 'var(--border)' }}
-      >
+    <footer
+      className="p-4 border-t"
+      style={{ borderColor: 'var(--border)' }}
+    >
         <span className="pill mr-2">Sugerencia</span>
         <span className="small muted">
           Cambia región y luego ajusta ingresos/overhead/margen según tu operación. Usa "Exportar estimación" para guardar tu escenario.
