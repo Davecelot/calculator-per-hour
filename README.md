@@ -43,16 +43,6 @@ npm install
 npm run dev
 ```
 
-### Environment Variables
-
-Feature flags can be configured through Vite environment variables:
-
-- `VITE_ENABLE_THEME_TOGGLE` (default `true`, set to `false` to disable)
-- `VITE_ENABLE_EXPORT` (default `true`, set to `false` to disable)
-- `VITE_ENABLE_SAVED_PRESETS` (default `false`, set to `true` to enable)
-
-Create a `.env` file or export the variables in your shell before running the app.
-
 ### Building for Production
 
 ```bash
@@ -75,7 +65,6 @@ src/
 ├── hooks/
 │   ├── useRateCalculation.js
 │   ├── useDebounce.js
-│   ├── useLocalStorage.js
 │   ├── useTheme.js
 ├── utils/
 │   ├── pdfExport.js
@@ -105,9 +94,6 @@ Centralizes all rate calculation logic, including billable hours, base rates, bl
 
 ### useDebounce
 Provides debouncing functionality to optimize performance for input fields.
-
-### useLocalStorage
-Enables persistent storage of user preferences and calculations.
 
 ### useTheme
 Manages theme state and applies theme styles to the document.

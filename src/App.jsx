@@ -15,7 +15,6 @@ import ProjectResultCard from './components/ProjectResultCard';
 
 // Import hooks
 import { useRateCalculation } from './hooks/useRateCalculation';
-import { useLocalStorage } from './hooks/useLocalStorage';
 import { useExchangeRates } from './hooks/useExchangeRates';
 import { pdfExport } from './utils/pdfExport';
 import { computeAnnualTarget } from './lib/pricing/annual';
