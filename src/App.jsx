@@ -2,27 +2,27 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { PRESETS, retainerSuggestion, CLIENT_MULT, COMPLEXITY_MULT } from './presets.js';
 
 // Import components
-import RegionSelector from './components/RegionSelector';
-import DebouncedInput from './components/DebouncedInput';
-import AccessibleSelect from './components/AccessibleSelect';
-import ThemeToggle from './components/ThemeToggle';
-import { Button } from './components/ui/button';
-import { Card } from './components/ui/card';
-import DevelopmentTimePanel from './components/DevelopmentTimePanel';
-import ModeToggle from './components/ModeToggle';
-import ProjectControls from './components/ProjectControls';
-import ProjectResultCard from './components/ProjectResultCard';
+import RegionSelector from '@/components/RegionSelector';
+import DebouncedInput from '@/components/DebouncedInput';
+import AccessibleSelect from '@/components/AccessibleSelect';
+import ThemeToggle from '@/components/ThemeToggle';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import DevelopmentTimePanel from '@/components/DevelopmentTimePanel';
+import ModeToggle from '@/components/ModeToggle';
+import ProjectControls from '@/components/ProjectControls';
+import ProjectResultCard from '@/components/ProjectResultCard';
 
 // Import hooks
-import { useRateCalculation } from './hooks/useRateCalculation';
-import { useExchangeRates } from './hooks/useExchangeRates';
-import { pdfExport } from './utils/pdfExport';
-import { computeAnnualTarget } from './lib/pricing/annual';
+import { useRateCalculation } from '@/hooks/useRateCalculation';
+import { useExchangeRates } from '@/hooks/useExchangeRates';
+import { pdfExport } from '@/utils/pdfExport';
+import { computeAnnualTarget } from '@/lib/pricing/annual';
 import {
   computeProjectByHours,
   computeProjectByProrate,
   roundTo,
-} from './lib/pricing/project';
+} from '@/lib/pricing/project';
 
 /**
  * Format a numeric value as a currency string. Uses the chosen
