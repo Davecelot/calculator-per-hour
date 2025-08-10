@@ -9,6 +9,7 @@ A React application for calculating hourly rates and project costs for UI/UX pro
 - Project scope and hours mix calculation
 - Client type and complexity adjusters
 - Support for both freelance and retainer engagement models
+- Real-time currency conversion using exchangerate.host
 - Export functionality for saving calculations (JSON and PDF)
 - Responsive design for all devices
 - Dark/Light theme toggle

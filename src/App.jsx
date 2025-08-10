@@ -12,7 +12,6 @@ import DevelopmentTimePanel from './components/DevelopmentTimePanel';
 
 // Import hooks
 import { useRateCalculation } from './hooks/useRateCalculation';
-import { useLocalStorage } from './hooks/useLocalStorage';
 import { pdfExport } from './utils/pdfExport';
 
 /**
@@ -75,6 +74,23 @@ export default function App() {
   const [retainerHours, setRetainerHours] = useState(60);
   const [retainerDiscountPct, setRetainerDiscountPct] = useState(18);
 
+  async function handleCurrencyChange(newCurrency) {
+    if (newCurrency === currency) return;
+    try {
+      const res = await fetch(
+        `https://api.exchangerate.host/convert?from=${currency}&to=${newCurrency}`
+      );
+      const data = await res.json();
+      const rate = data.result;
+      setUiIncome((v) => v * rate);
+      setUxrIncome((v) => v * rate);
+      setOverhead((v) => v * rate);
+      setCurrency(newCurrency);
+    } catch (err) {
+      console.error('Error fetching exchange rate', err);
+    }
+  }
+
   // Ensure selected adjusters are valid keys
   useEffect(() => {
     if (CLIENT_MULT[clientType] === undefined) {
@@ -96,11 +112,23 @@ export default function App() {
    *
    * @param {string} key The key of the PRESETS object
    */
-  function applyPreset(key) {
+  async function applyPreset(key) {
     const p = PRESETS[key] ?? PRESETS.LATAM;
-    setUiIncome(p.uiIncome);
-    setUxrIncome(p.uxrIncome);
-    setOverhead(p.overhead);
+    let factor = 1;
+    try {
+      if (currency !== 'USD') {
+        const res = await fetch(
+          `https://api.exchangerate.host/convert?from=USD&to=${currency}`
+        );
+        const data = await res.json();
+        factor = data.result;
+      }
+    } catch (err) {
+      console.error('Error fetching preset conversion', err);
+    }
+    setUiIncome(p.uiIncome * factor);
+    setUxrIncome(p.uxrIncome * factor);
+    setOverhead(p.overhead * factor);
     setWeeks(p.weeks);
     setHoursPerWeek(p.hoursPerWeek);
     setBillablePct(p.billablePct);
@@ -294,11 +322,11 @@ export default function App() {
             <Card>
               <div className="grid grid-cols-12 gap-3">
               {/* Region and currency selectors */}
-              <RegionSelector 
-                region={region} 
-                setRegion={setRegion} 
-                currency={currency} 
-                setCurrency={setCurrency} 
+              <RegionSelector
+                region={region}
+                setRegion={setRegion}
+                currency={currency}
+                setCurrency={handleCurrencyChange}
               />
 
               {/* Business assumptions */}
