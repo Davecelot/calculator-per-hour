@@ -131,6 +131,10 @@ The deployed application will be available at: `https://davecelot.github.io/calc
 
 The application is configured as a Progressive Web App (PWA) using `vite-plugin-pwa`, allowing users to install it on their devices and use it offline.
 
+### Cache updates
+
+Although `vite-plugin-pwa` is set to `registerType: 'autoUpdate'`, some browsers may continue serving cached assets after a new deployment. Consider bumping the manifest version or renaming assets to force the browser to fetch the latest files. Users may need to perform a hard refresh (`Ctrl+F5`) or clear the PWA cache to load the most recent version.
+
 ## Technologies Used
 
 - React 18
