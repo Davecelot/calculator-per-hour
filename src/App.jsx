@@ -8,7 +8,6 @@ import AccessibleSelect from './components/AccessibleSelect';
 import ThemeToggle from './components/ThemeToggle';
 import { Button } from './components/ui/button';
 import { Card } from './components/ui/card';
-import MarketTrends from './components/MarketTrends';
 import DevelopmentTimePanel from './components/DevelopmentTimePanel';
 
 // Import hooks
@@ -291,7 +290,7 @@ export default function App() {
       <div className="flex-grow p-4">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {/* Left: Form */}
-          <section>
+          <section className="md:col-span-1 lg:col-span-2">
             <Card>
               <div className="grid grid-cols-12 gap-3">
               {/* Region and currency selectors */}
@@ -502,7 +501,7 @@ export default function App() {
         </section>
 
         {/* Right: Results */}
-        <aside className="w-full md:w-5/12">
+        <aside className="md:col-span-1">
           <Card className="md:sticky md:top-4">
             <div className="grid grid-cols-12 gap-3">
               <div className="col-span-12">
@@ -630,8 +629,7 @@ export default function App() {
             </div>
           </Card>
         </aside>
-        <div className="flex flex-col gap-4">
-          <MarketTrends />
+        <div className="md:col-span-2 lg:col-span-1 lg:col-start-3">
           <DevelopmentTimePanel
             weeks={weeks}
             setWeeks={setWeeks}
