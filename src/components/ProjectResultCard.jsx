@@ -1,6 +1,6 @@
 import React from 'react';
 import BreakdownAccordion from './BreakdownAccordion';
-import { BrandCardFooter } from '@/components/brand/BrandCard';
+import { BrandCard } from '@/components/brand/BrandCard';
 import { formatCurrency } from '@/utils/format';
 
 /**
@@ -18,8 +18,8 @@ export default function ProjectResultCard({
   precioBaseB,
 }) {
   return (
-    <BrandCardFooter className="mt-4 border-t" style={{ borderColor: 'var(--border)' }}>
-      <h2 className="text-base font-semibold mb-3">Resultado del proyecto</h2>
+    <BrandCard className="mt-4">
+      <h2 className="text-lg font-bold mb-3">Resultado del proyecto</h2>
       <div className="space-y-1 text-sm">
         <div>
           <strong>Precio mínimo recomendado:</strong> {formatCurrency(precioFinal, currency)}
@@ -44,6 +44,6 @@ export default function ProjectResultCard({
         precioB={precioBaseB}
         currency={currency}
       />
-    </BrandCardFooter>
+    </BrandCard>
   );
 }

@@ -19,8 +19,8 @@ export default function ProjectControls({
   setRoundingStep,
 }) {
   return (
-    <BrandCard className="p-4 mt-4">
-      <h2 className="text-base font-semibold mb-3">Proyecto</h2>
+    <BrandCard className="mt-4">
+      <h2 className="text-lg font-bold mb-3">Proyecto</h2>
       <div className="space-y-4">
         <div>
           <Label htmlFor="meses">Duración del proyecto (meses)</Label>
