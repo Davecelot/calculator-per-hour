@@ -9,6 +9,7 @@ import { BrandButton } from '@/components/brand/BrandButton';
 import { BrandCard } from '@/components/brand/BrandCard';
 import DevelopmentTimePanel from '@/components/DevelopmentTimePanel';
 import ModeToggle from '@/components/ModeToggle';
+import ThemeToggle from '@/components/ThemeToggle';
 import ProjectControls from '@/components/ProjectControls';
 import ProjectResultCard from '@/components/ProjectResultCard';
 
@@ -339,7 +340,7 @@ export default function App() {
     <div className="min-h-screen flex flex-col">
       {/* Header */}
       <header
-        className="p-5 border-b flex items-center"
+        className="p-5 border-b flex items-center justify-between"
         style={{
           borderColor: 'var(--border)',
           background: 'linear-gradient(180deg, rgba(124,92,255,0.12), transparent)',
@@ -351,6 +352,7 @@ export default function App() {
           </h1>
           <ModeToggle mode={mode} onChange={setMode} />
         </div>
+        <ThemeToggle />
       </header>
 
       <div className="flex-grow p-4">
