@@ -7,11 +7,17 @@ export function useExchangeRates() {
   useEffect(() => {
     async function fetchRates() {
       try {
-        const res = await fetch('https://api.exchangerate.host/latest?base=USD&symbols=USD,EUR,ARS,GBP');
+        const res = await fetch(
+          'https://raw.githubusercontent.com/prebid/currency-file/master/latest.json'
+        );
         const data = await res.json();
-        if (data && data.rates) {
-          setRates({ USD: 1, ...data.rates });
-        }
+        const usdRates = data?.conversions?.USD ?? {};
+        setRates({
+          USD: 1,
+          EUR: usdRates.EUR,
+          GBP: usdRates.GBP,
+          ARS: usdRates.ARS ?? 955, // Fallback approximated rate
+        });
       } catch (err) {
         console.error('Failed to fetch exchange rates', err);
       }
