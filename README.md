@@ -1,6 +1,6 @@
 # Conversor de Tarifas - React
 
-A React application for calculating hourly rates and project costs for UI/UX professionals. This tool helps freelancers and agencies determine appropriate pricing based on desired income, overhead costs, and project complexity.
+Web-based calculator for determining hourly rates and project budgets for UI/UX professionals. Built with React and Vite, the tool lets freelancers and agencies estimate fair pricing by combining income goals, overhead expenses, regional presets and project complexity.
 
 ## Features
 
@@ -40,6 +40,22 @@ npm install
 ```bash
 # Start the development server
 npm run dev
+```
+
+### Usage
+
+1. Start the development server or open the deployed site.
+2. Choose a region to preload currency and cost assumptions.
+3. Enter income goals, overhead and productivity assumptions.
+4. Specify project scope, client type and complexity to see calculated rates.
+5. Export the results as JSON or PDF to share with clients or teammates.
+
+### Testing
+
+Run the calculation tests to ensure utilities behave as expected:
+
+```bash
+npm test
 ```
 
 ### Building for Production
