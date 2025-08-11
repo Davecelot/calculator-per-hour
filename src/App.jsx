@@ -572,7 +572,7 @@ export default function App() {
               </div>
               </BrandCard>
           </section>
-          {mode === 'project' && (
+        {mode === 'project' && (
             <section className="md:col-span-2">
               <ProjectControls
                 meses={mesesProyecto}
@@ -584,9 +584,20 @@ export default function App() {
                 roundingStep={roundingStep}
                 setRoundingStep={setRoundingStep}
               />
+              <ProjectResultCard
+                currency={currency}
+                tarifaHora={tarifaHora}
+                horasProyecto={projectHours.horasProyecto}
+                precioFinal={precioFinal}
+                tarifaEfectiva={tarifaEfectiva}
+                semanasProyecto={projectHours.semanasProyecto}
+                utilizacion={billablePct}
+                precioBaseA={projectHours.precioBase}
+                precioBaseB={projectProrate.precioBase}
+              />
             </section>
-          )}
-        </div>
+        )}
+      </div>
 
         {/* Right: Results */}
         <aside className="md:col-span-1">
@@ -715,19 +726,6 @@ export default function App() {
                 </div>
               </div>
             </div>
-            {mode === 'project' && (
-              <ProjectResultCard
-                currency={currency}
-                tarifaHora={tarifaHora}
-                horasProyecto={projectHours.horasProyecto}
-                precioFinal={precioFinal}
-                tarifaEfectiva={tarifaEfectiva}
-                semanasProyecto={projectHours.semanasProyecto}
-                utilizacion={billablePct}
-                precioBaseA={projectHours.precioBase}
-                precioBaseB={projectProrate.precioBase}
-              />
-            )}
           </BrandCard>
         </aside>
       </div>
