@@ -1,4 +1,5 @@
 import React from 'react';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 /**
  * Segmented control to switch between annual and project modes.
@@ -6,27 +7,11 @@ import React from 'react';
  */
 export default function ModeToggle({ mode, onChange }) {
   return (
-    <div role="group" aria-label="Modo de cálculo" className="flex rounded-md overflow-hidden border border-[var(--border)]">
-      <button
-        type="button"
-        aria-pressed={mode === 'annual'}
-        onClick={() => onChange('annual')}
-        className={`px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] ${
-          mode === 'annual' ? 'bg-[var(--brand)] text-white' : 'bg-[var(--panel)]'
-        }`}
-      >
-        Modo Anual
-      </button>
-      <button
-        type="button"
-        aria-pressed={mode === 'project'}
-        onClick={() => onChange('project')}
-        className={`px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] ${
-          mode === 'project' ? 'bg-[var(--brand)] text-white' : 'bg-[var(--panel)]'
-        }`}
-      >
-        Modo Proyecto
-      </button>
-    </div>
+    <Tabs value={mode} onValueChange={onChange} className="w-full max-w-xs">
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="annual">Modo Anual</TabsTrigger>
+        <TabsTrigger value="project">Modo Proyecto</TabsTrigger>
+      </TabsList>
+    </Tabs>
   );
 }
