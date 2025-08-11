@@ -573,16 +573,18 @@ export default function App() {
               </BrandCard>
           </section>
           {mode === 'project' && (
-            <ProjectControls
-              meses={mesesProyecto}
-              setMeses={setMesesProyecto}
-              dedicacion={dedicacionPct}
-              setDedicacion={setDedicacionPct}
-              buffer={bufferPct}
-              setBuffer={setBufferPct}
-              roundingStep={roundingStep}
-              setRoundingStep={setRoundingStep}
-            />
+            <section className="md:col-span-2">
+              <ProjectControls
+                meses={mesesProyecto}
+                setMeses={setMesesProyecto}
+                dedicacion={dedicacionPct}
+                setDedicacion={setDedicacionPct}
+                buffer={bufferPct}
+                setBuffer={setBufferPct}
+                roundingStep={roundingStep}
+                setRoundingStep={setRoundingStep}
+              />
+            </section>
           )}
         </div>
 
@@ -713,9 +715,7 @@ export default function App() {
                 </div>
               </div>
             </div>
-          </BrandCard>
-          {mode === 'project' && (
-            <div className="mt-4">
+            {mode === 'project' && (
               <ProjectResultCard
                 currency={currency}
                 tarifaHora={tarifaHora}
@@ -727,8 +727,8 @@ export default function App() {
                 precioBaseA={projectHours.precioBase}
                 precioBaseB={projectProrate.precioBase}
               />
-            </div>
-          )}
+            )}
+          </BrandCard>
         </aside>
       </div>
       </div>

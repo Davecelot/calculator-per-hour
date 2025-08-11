@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card } from './ui/card';
 import BreakdownAccordion from './BreakdownAccordion';
+import { BrandCardFooter } from '@/components/brand/BrandCard';
 import { formatCurrency } from '@/utils/format';
 
 /**
@@ -18,7 +18,7 @@ export default function ProjectResultCard({
   precioBaseB,
 }) {
   return (
-    <Card className="p-4">
+    <BrandCardFooter className="mt-4 border-t" style={{ borderColor: 'var(--border)' }}>
       <h2 className="text-base font-semibold mb-3">Resultado del proyecto</h2>
       <div className="space-y-1 text-sm">
         <div>
@@ -44,6 +44,6 @@ export default function ProjectResultCard({
         precioB={precioBaseB}
         currency={currency}
       />
-    </Card>
+    </BrandCardFooter>
   );
 }
