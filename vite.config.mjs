@@ -16,7 +16,7 @@ export default defineConfig({
         name: 'Conversor de tarifas',
         short_name: 'Tarifas',
         description: 'Calculadora de tarifas para UI y UX Research',
-        theme_color: '#4f772d',
+        theme_color: '#4a4a4a',
         icons: [
           {
             src: 'pwa-192x192.png',
