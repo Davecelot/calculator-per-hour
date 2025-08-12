@@ -7,10 +7,14 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
  */
 export default function ModeToggle({ mode, onChange }) {
   return (
-    <Tabs value={mode} onValueChange={onChange} className="w-full max-w-xs">
+    <Tabs value={mode} onValueChange={onChange} className="w-full">
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="annual">Modo Anual</TabsTrigger>
-        <TabsTrigger value="project">Modo Proyecto</TabsTrigger>
+        <TabsTrigger value="annual" className="w-full">
+          Modo Anual
+        </TabsTrigger>
+        <TabsTrigger value="project" className="w-full">
+          Modo Proyecto
+        </TabsTrigger>
       </TabsList>
     </Tabs>
   );
