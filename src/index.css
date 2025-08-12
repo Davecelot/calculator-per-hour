@@ -5,83 +5,82 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 47.4% 11.2%;
+    --foreground: 0 0% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 47.4% 11.2%;
+    --card-foreground: 0 0% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 47.4% 11.2%;
-    --primary: 92 45% 32%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 92 45% 32%;
+    --popover-foreground: 0 0% 10%;
+    --primary: 0 0% 20%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 95%;
+    --secondary-foreground: 0 0% 20%;
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 0% 92%;
+    --accent-foreground: 0 0% 20%;
+    --destructive: 0 0% 40%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 20%;
     --radius: 0.75rem;
   }
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 92 45% 32%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --background: 0 0% 8%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 90%;
+    --primary-foreground: 0 0% 10%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 0% 40%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 0 0% 80%;
     --radius: 0.75rem;
   }
 }
 
 
-/* Define CSS variables for a lighter, nature inspired palette. These
+/* Define CSS variables for a neutral, modern grayscale palette. These
    variables power the Shadcn components and keep colours consistent
-   across the app. Greens and olives give the calculator a friendlier
-   feel compared to the previous dark theme. */
+   across the app while embracing a minimal look. */
 :root {
-  /* soft green background */
-  --bg: #f1f5f2;
+  /* light gray background */
+  --bg: #f7f7f7;
   /* translucent panel for a subtle glass effect */
   --panel: rgba(255, 255, 255, 0.8);
-  /* muted olive for secondary text */
-  --muted: #6b705c;
+  /* muted gray for secondary text */
+  --muted: #6e6e6e;
   /* main text colour */
-  --text: #1a1d1a;
+  --text: #212121;
   /* brand accent */
-  --brand: #4f772d;
+  --brand: #4a4a4a;
   /* semantic colours */
-  --good: #588157;
-  --bad: #bc4749;
-  --warn: #e9c46a;
-  /* light olive border */
-  --border: #b7b7a4;
+  --good: #5e5e5e;
+  --bad: #3a3a3a;
+  --warn: #a0a0a0;
+  /* light gray border */
+  --border: #d0d0d0;
 }
 
 .dark {
-  --bg: #1a1d1a;
+  --bg: #1a1a1a;
   --panel: rgba(32, 32, 32, 0.8);
-  --muted: #b7b7a4;
-  --text: #f1f5f2;
-  --brand: #4f772d;
-  --good: #588157;
-  --bad: #bc4749;
-  --warn: #e9c46a;
+  --muted: #9e9e9e;
+  --text: #ededed;
+  --brand: #5c5c5c;
+  --good: #707070;
+  --bad: #4d4d4d;
+  --warn: #666666;
   --border: #2e2e2e;
 }
 
@@ -110,8 +109,8 @@ body {
   padding: 0.875rem; /* 14px */
   border: 1px dashed var(--border);
   border-radius: 0.75rem; /* 12px */
-  /* faint brand tint */
-  background: rgba(79, 119, 45, 0.07);
+  /* subtle neutral tint */
+  background: rgba(0, 0, 0, 0.04);
 }
 .btn {
   background: var(--brand);
@@ -121,11 +120,19 @@ body {
   padding: 0.625rem 0.875rem; /* 10px 14px */
   cursor: pointer;
   text-align: center;
+  transition: background-color 0.2s ease;
+}
+.btn:hover {
+  background: var(--foreground);
 }
 .btn-secondary {
   background: var(--panel);
   color: var(--text);
   border: 1px solid var(--border);
+  transition: background-color 0.2s ease;
+}
+.btn-secondary:hover {
+  background: var(--secondary);
 }
 .muted {
   color: var(--muted);
