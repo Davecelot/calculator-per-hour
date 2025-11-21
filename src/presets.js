@@ -16,6 +16,8 @@ export const PRESETS = {
     billablePct: 50, // ≈ 960–1000 h/year (taking into account non‑billable work)
     marginPct: 20,
     contingencyPct: 15,
+    taxRate: 20,
+    marketRateRange: { min: 25, max: 60 }, // USD/h
     defaultHours: { research: 20, ui: 40 },
   },
   EU_WEST: {
@@ -27,6 +29,8 @@ export const PRESETS = {
     billablePct: 55, // ≈ 1056 h/year
     marginPct: 25,
     contingencyPct: 15,
+    taxRate: 30,
+    marketRateRange: { min: 60, max: 120 }, // EUR/h (approx converted to USD for base)
     defaultHours: { research: 25, ui: 45 },
   },
   EU_EAST: {
@@ -38,6 +42,8 @@ export const PRESETS = {
     billablePct: 55,
     marginPct: 25,
     contingencyPct: 15,
+    taxRate: 25,
+    marketRateRange: { min: 40, max: 90 },
     defaultHours: { research: 18, ui: 40 },
   },
   USA: {
@@ -49,6 +55,8 @@ export const PRESETS = {
     billablePct: 60, // ≈ 1152 h/year
     marginPct: 28,
     contingencyPct: 15,
+    taxRate: 30,
+    marketRateRange: { min: 80, max: 200 },
     defaultHours: { research: 30, ui: 50 },
   },
 };

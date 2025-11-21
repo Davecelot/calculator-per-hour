@@ -16,7 +16,7 @@ export default function DebouncedInput({
 }) {
   // Local state for immediate UI updates
   const [inputValue, setInputValue] = useState(initialValue);
-  
+
   // Debounced value that will trigger calculations only after delay
   const debouncedValue = useDebounce(inputValue, debounceDelay);
 
@@ -30,6 +30,11 @@ export default function DebouncedInput({
     onValueChange(debouncedValue);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue]);
+
+  // Sync local state with prop updates (e.g. from presets)
+  useEffect(() => {
+    setInputValue(initialValue);
+  }, [initialValue]);
 
   return (
     <ValidatedInput

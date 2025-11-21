@@ -1,36 +1,33 @@
 import React from 'react';
-import AccessibleSelect from './AccessibleSelect';
 
 export default function RegionSelector({ region, setRegion, currency, setCurrency }) {
   return (
     <>
-      <div className="col-span-12 md:col-span-6">
-        <AccessibleSelect
-          label="Región (preset)"
-          id="region"
+      <div className="input-group">
+        <label className="input-label">Region (Preset)</label>
+        <select
           value={region}
-          onChange={setRegion}
-          options={[
-            { value: 'LATAM', label: 'Latinoamérica (preset)' },
-            { value: 'EU_WEST', label: 'Europa Occidental (preset)' },
-            { value: 'EU_EAST', label: 'Europa del Este (preset)' },
-            { value: 'USA', label: 'USA / Canadá (preset)' }
-          ]}
-        />
+          onChange={(e) => setRegion(e.target.value)}
+          className="tech-input appearance-none"
+        >
+          <option value="LATAM">LATAM (Latin America)</option>
+          <option value="EU_WEST">EU_WEST (Western Europe)</option>
+          <option value="EU_EAST">EU_EAST (Eastern Europe)</option>
+          <option value="USA">USA (North America)</option>
+        </select>
       </div>
-      <div className="col-span-12 md:col-span-6">
-        <AccessibleSelect
-          label="Moneda"
-          id="currency"
+      <div className="input-group">
+        <label className="input-label">Currency (Convert)</label>
+        <select
           value={currency}
-          onChange={setCurrency}
-          options={[
-            { value: 'USD', label: 'USD ($)' },
-            { value: 'EUR', label: 'EUR (€)' },
-            { value: 'ARS', label: 'ARS ($)' },
-            { value: 'GBP', label: 'GBP (£)' }
-          ]}
-        />
+          onChange={(e) => setCurrency(e.target.value)}
+          className="tech-input appearance-none"
+        >
+          <option value="USD">USD ($)</option>
+          <option value="EUR">EUR (€)</option>
+          <option value="ARS">ARS ($)</option>
+          <option value="GBP">GBP (£)</option>
+        </select>
       </div>
     </>
   );

@@ -1,6 +1,4 @@
 import React from 'react';
-import { Label } from './ui/label';
-import { BrandSelect } from '@/components/brand/BrandSelect';
 
 export default function AccessibleSelect({
   label,
@@ -11,27 +9,32 @@ export default function AccessibleSelect({
   helpText,
 }) {
   return (
-    <div className="space-y-1">
-      <Label htmlFor={id}>{label}</Label>
-      <BrandSelect value={value} onValueChange={onChange}>
-        <BrandSelect.Trigger
+    <div className="input-group">
+      <label htmlFor={id} className="input-label">
+        {label}
+      </label>
+      <div className="relative">
+        <select
           id={id}
+          value={value}
+          onChange={onChange}
           aria-describedby={helpText ? `${id}-help` : undefined}
+          className="tech-input appearance-none"
         >
-          <BrandSelect.Value />
-        </BrandSelect.Trigger>
-        <BrandSelect.Content>
           {options.map((option) => (
-            <BrandSelect.Item key={option.value} value={option.value}>
+            <option key={option.value} value={option.value}>
               {option.label}
-            </BrandSelect.Item>
+            </option>
           ))}
-        </BrandSelect.Content>
-      </BrandSelect>
+        </select>
+        <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-textMuted">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+        </div>
+      </div>
       {helpText && (
-        <p id={`${id}-help`} className="text-xs text-[var(--muted)]">
+        <div id={`${id}-help`} className="text-xs text-textMuted mt-1 font-mono">
           {helpText}
-        </p>
+        </div>
       )}
     </div>
   );

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { PRESETS, retainerSuggestion, CLIENT_MULT, COMPLEXITY_MULT } from './presets.js';
 
 // Import components
+<<<<<<< HEAD
 import RegionSelector from '@/components/RegionSelector';
 import DebouncedInput from '@/components/DebouncedInput';
 import AccessibleSelect from '@/components/AccessibleSelect';
@@ -25,6 +26,37 @@ import {
   roundTo,
 } from '@/lib/pricing/project';
 
+=======
+import RegionSelector from './components/RegionSelector';
+import DebouncedInput from './components/DebouncedInput';
+import AccessibleSelect from './components/AccessibleSelect';
+import UtilizationBar from './components/UtilizationBar';
+import OverheadManager from './components/OverheadManager';
+import MarketTelemetry from './components/MarketTelemetry';
+// ThemeToggle is removed as we are enforcing dark mode
+
+// Import hooks
+import { useRateCalculation } from './hooks/useRateCalculation';
+import { pdfExport } from './utils/pdfExport';
+import { fetchRates } from './services/currency';
+
+/**
+ * Format a numeric value as a currency string.
+ */
+function fmtMoney(value, currency) {
+  if (!Number.isFinite(value)) return '—';
+  const symbol =
+    currency === 'EUR'
+      ? '€'
+      : currency === 'ARS'
+        ? '$'
+        : currency === 'GBP'
+          ? '£'
+          : '$';
+  const rounded = Math.round(value * 100) / 100;
+  return symbol + rounded.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+>>>>>>> 1230d17 (UI Overhaul: Tech/AI aesthetic + Currency, Fiscal, Utilization, System Loadout, Market Telemetry features)
 
 /**
  * The main component renders a responsive form on the left and
@@ -35,8 +67,13 @@ export default function App() {
   // Global selectors
   const [region, setRegion] = useState('LATAM');
   const [currency, setCurrency] = useState('USD');
+<<<<<<< HEAD
   const rates = useExchangeRates();
   const prevCurrency = useRef('USD');
+=======
+  const [rates, setRates] = useState(null);
+  const [marketRateRange, setMarketRateRange] = useState(null);
+>>>>>>> 1230d17 (UI Overhaul: Tech/AI aesthetic + Currency, Fiscal, Utilization, System Loadout, Market Telemetry features)
 
   // Business assumptions
   const [uiIncome, setUiIncome] = useState(0);
@@ -47,6 +84,7 @@ export default function App() {
   const [billablePct, setBillablePct] = useState(50);
   const [marginPct, setMarginPct] = useState(20);
   const [contingencyPct, setContingencyPct] = useState(15);
+  const [taxRate, setTaxRate] = useState(20);
 
   // Project hours mix
   const [hoursResearch, setHoursResearch] = useState(0);
@@ -85,12 +123,7 @@ export default function App() {
   }, [complexity]);
 
   /**
-   * Apply the preset values for a given region. This function
-   * initializes incomes, overhead, productivity assumptions and
-   * recommended project hours. It should be called whenever the
-   * region selector changes.
-   *
-   * @param {string} key The key of the PRESETS object
+   * Apply the preset values for a given region.
    */
   function applyPreset(key) {
     const p = PRESETS[key] ?? PRESETS.LATAM;
@@ -111,6 +144,8 @@ export default function App() {
     setBillablePct(p.billablePct);
     setMarginPct(p.marginPct);
     setContingencyPct(p.contingencyPct);
+    setTaxRate(p.taxRate ?? 20);
+    setMarketRateRange(p.marketRateRange);
     // Set default mix values
     setHoursResearch(p.defaultHours.research);
     setHoursUI(p.defaultHours.ui);
@@ -146,7 +181,50 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currency, rates]);
 
-  // Auto-suggest a discount when the retainer hours change and no manual discount was entered
+  // Fetch currency rates on mount
+  useEffect(() => {
+    async function loadRates() {
+      const fetchedRates = await fetchRates('USD');
+      if (fetchedRates) {
+        setRates(fetchedRates);
+      }
+    }
+    loadRates();
+  }, []);
+
+  // Handle currency change with conversion
+  const handleCurrencyChange = (newCurrency) => {
+    if (!rates || currency === newCurrency) {
+      setCurrency(newCurrency);
+      return;
+    }
+
+    // Calculate conversion rate
+    // If base is USD, rate is rates[newCurrency]
+    // If current is not USD, we convert to USD first then to newCurrency
+    // But our base is USD, so:
+    // USD -> EUR = rates['EUR']
+    // EUR -> GBP = (1/rates['EUR']) * rates['GBP']
+
+    let rate = 1;
+    if (currency === 'USD') {
+      rate = rates[newCurrency] || 1;
+    } else if (newCurrency === 'USD') {
+      rate = 1 / (rates[currency] || 1);
+    } else {
+      // Cross rate: Old -> USD -> New
+      const toUsd = 1 / (rates[currency] || 1);
+      const toNew = rates[newCurrency] || 1;
+      rate = toUsd * toNew;
+    }
+
+    setUiIncome(prev => Math.round(prev * rate));
+    setUxrIncome(prev => Math.round(prev * rate));
+    setOverhead(prev => Math.round(prev * rate));
+    setCurrency(newCurrency);
+  };
+
+  // Auto-suggest a discount when the retainer hours change
   useEffect(() => {
     if (engagement === 'retainer' && retainerHours > 0) {
       if (retainerDiscountPct === 0) {
@@ -157,7 +235,7 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [retainerHours, engagement]);
 
-  // Use the rate calculation hook instead of inline calculations
+  // Use the rate calculation hook
   const {
     billableHours,
     rateUI,
@@ -166,7 +244,9 @@ export default function App() {
     adjustedRate,
     totalProjectHours,
     fixedPrice,
-    retainerPrice
+    retainerPrice,
+    netIncome,
+    taxAmount
   } = useRateCalculation({
     uiIncome,
     uxrIncome,
@@ -186,8 +266,10 @@ export default function App() {
     engagement,
     retainerHours,
     retainerDiscountPct,
+    taxRate,
   });
 
+<<<<<<< HEAD
   const maxRate = Math.max(rateUI, rateUXR, adjustedRate);
   const maxHours = 52 * 40;
 
@@ -237,6 +319,9 @@ export default function App() {
       : 0;
 
   // Export the current estimation to a JSON file for download
+=======
+  // Export to JSON
+>>>>>>> 1230d17 (UI Overhaul: Tech/AI aesthetic + Currency, Fiscal, Utilization, System Loadout, Market Telemetry features)
   function exportJson() {
     const data = {
       region,
@@ -301,7 +386,7 @@ export default function App() {
     });
   }
 
-  // Client type options for AccessibleSelect
+  // Options for selects
   const clientTypeOptions = [
     { value: 'micro', label: 'Micro / Startup' },
     { value: 'smb', label: 'PyME' },
@@ -309,7 +394,6 @@ export default function App() {
     { value: 'enterprise', label: 'Empresa grande / Corporación' },
   ];
 
-  // Complexity options for AccessibleSelect
   const complexityOptions = [
     { value: 'basic', label: 'Básico' },
     { value: 'standard', label: 'Estándar / Promedio' },
@@ -317,7 +401,6 @@ export default function App() {
     { value: 'extreme', label: 'Extremo / Crítico' },
   ];
 
-  // Engagement options for AccessibleSelect
   const engagementOptions = [
     { value: 'freelance', label: 'Freelance / Proyecto' },
     { value: 'retainer', label: 'In‑house partner / Retainer mensual' },
@@ -337,8 +420,12 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background text-text font-sans selection:bg-white selection:text-black">
+      {/* Dithering Overlay */}
+      <div className="fixed inset-0 pointer-events-none z-50 opacity-[0.03] bg-dither mix-blend-overlay"></div>
+
       {/* Header */}
+<<<<<<< HEAD
       <header
         className="p-5 border-b flex items-center justify-between"
         style={{
@@ -375,143 +462,217 @@ export default function App() {
                 currency={currency}
                 setCurrency={setCurrency}
               />
+=======
+      <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+            <h1 className="text-lg font-bold tracking-tight uppercase">
+              Rate<span className="text-textMuted">Calculator</span>
+              <span className="ml-2 text-xs px-1.5 py-0.5 border border-border rounded text-textMuted font-mono">v2.0</span>
+            </h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-2 text-xs font-mono text-textMuted">
+              <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+              SYSTEM ONLINE
+            </div>
+          </div>
+        </div>
+      </header>
 
-              {/* Business assumptions */}
-              <div className="col-span-12 mt-2">
-                <h2 className="text-base font-semibold">Supuestos del negocio (por persona)</h2>
+      <main className="flex-grow p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+>>>>>>> 1230d17 (UI Overhaul: Tech/AI aesthetic + Currency, Fiscal, Utilization, System Loadout, Market Telemetry features)
+
+          {/* Left Column: Controls */}
+          <div className="lg:col-span-7 space-y-6">
+
+            {/* Region & Currency */}
+            <section className="card">
+              <div className="absolute top-0 right-0 p-2 opacity-20">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M2 12h20" /></svg>
               </div>
-              <div className="col-span-12 md:col-span-4">
+              <h2 className="text-sm font-bold uppercase tracking-wider mb-4 text-textMuted flex items-center gap-2">
+                <span className="w-1 h-4 bg-white"></span>
+                Configuration
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <RegionSelector
+                  region={region}
+                  setRegion={setRegion}
+                  currency={currency}
+                  setCurrency={handleCurrencyChange}
+                />
+              </div>
+            </section>
+
+            {/* Business Assumptions */}
+            <section className="card">
+              <h2 className="text-sm font-bold uppercase tracking-wider mb-4 text-textMuted flex items-center gap-2">
+                <span className="w-1 h-4 bg-white"></span>
+                Business Logic
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <DebouncedInput
-                  label="Ingresos anuales deseados — UI Senior"
+                  label="Annual Income (UI Senior)"
                   initialValue={uiIncome}
                   onValueChange={setUiIncome}
                   min={0}
                   step={1000}
                   type="number"
                 />
-              </div>
-              <div className="col-span-12 md:col-span-4">
                 <DebouncedInput
-                  label="Ingresos anuales deseados — Research Senior"
+                  label="Annual Income (Research Senior)"
                   initialValue={uxrIncome}
                   onValueChange={setUxrIncome}
                   min={0}
                   step={1000}
                   type="number"
                 />
-              </div>
-              <div className="col-span-12 md:col-span-4">
-                <DebouncedInput
-                  label="Overhead anual (licencias, equipo, marketing) — por persona"
-                  initialValue={overhead}
-                  onValueChange={setOverhead}
-                  min={0}
-                  step={500}
-                  type="number"
-                />
-              </div>
 
+<<<<<<< HEAD
                 {/* Semanas y horas por semana se gestionan en el panel de tiempo de desarrollo */}
               <div className="col-span-12 md:col-span-4">
                 <DebouncedInput
                   label="% de horas facturables"
+=======
+                <OverheadManager
+                  totalOverhead={overhead}
+                  setTotalOverhead={setOverhead}
+                  currency={currency}
+                  region={region}
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  <DebouncedInput
+                    label="Weeks/Year"
+                    initialValue={weeks}
+                    onValueChange={setWeeks}
+                    min={1}
+                    max={52}
+                    type="number"
+                  />
+                  <DebouncedInput
+                    label="Hours/Week"
+                    initialValue={hoursPerWeek}
+                    onValueChange={setHoursPerWeek}
+                    min={1}
+                    max={80}
+                    type="number"
+                  />
+                </div>
+                <DebouncedInput
+                  label="Billable %"
+>>>>>>> 1230d17 (UI Overhaul: Tech/AI aesthetic + Currency, Fiscal, Utilization, System Loadout, Market Telemetry features)
                   initialValue={billablePct}
                   onValueChange={setBillablePct}
                   min={1}
                   max={100}
                   type="number"
-                  helpText="Porcentaje de tiempo dedicado a trabajo facturable"
+                  helpText="Time spent on billable work"
                 />
-              </div>
-
-              <div className="col-span-12 md:col-span-6">
+                <div className="col-span-1 md:col-span-2">
+                  <UtilizationBar
+                    billablePct={billablePct}
+                    weeks={weeks}
+                    hoursPerWeek={hoursPerWeek}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <DebouncedInput
+                    label="Margin %"
+                    initialValue={marginPct}
+                    onValueChange={setMarginPct}
+                    min={0}
+                    max={100}
+                    type="number"
+                  />
+                  <DebouncedInput
+                    label="Contingency %"
+                    initialValue={contingencyPct}
+                    onValueChange={setContingencyPct}
+                    min={0}
+                    max={100}
+                    type="number"
+                  />
+                </div>
                 <DebouncedInput
-                  label="Margen de ganancia (%)"
-                  initialValue={marginPct}
-                  onValueChange={setMarginPct}
+                  label="Fiscal Tax Rate %"
+                  initialValue={taxRate}
+                  onValueChange={setTaxRate}
                   min={0}
                   max={100}
                   type="number"
+                  helpText="Estimated effective tax rate"
                 />
               </div>
-              <div className="col-span-12 md:col-span-6">
-                <DebouncedInput
-                  label="Reserva de contingencia (%)"
-                  initialValue={contingencyPct}
-                  onValueChange={setContingencyPct}
-                  min={0}
-                  max={100}
-                  type="number"
-                />
-              </div>
+            </section>
 
-              {/* Project scope */}
-              <div className="col-span-12 mt-2">
-                <h2 className="text-base font-semibold">Alcance del proyecto y mezcla de horas</h2>
-              </div>
-              <div className="col-span-12 md:col-span-4">
+            {/* Project Scope */}
+            <section className="card">
+              <h2 className="text-sm font-bold uppercase tracking-wider mb-4 text-textMuted flex items-center gap-2">
+                <span className="w-1 h-4 bg-white"></span>
+                Scope & Mix
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <DebouncedInput
-                  label="Horas de Research (entrevistas, tests, análisis)"
+                  label="Research Hours"
                   initialValue={hoursResearch}
                   onValueChange={setHoursResearch}
                   min={0}
                   step={1}
                   type="number"
                 />
-              </div>
-              <div className="col-span-12 md:col-span-4">
                 <DebouncedInput
-                  label="Horas de UI / Build (wireframes, UI, No‑Code)"
+                  label="UI/Build Hours"
                   initialValue={hoursUI}
                   onValueChange={setHoursUI}
                   min={0}
                   step={1}
                   type="number"
                 />
-              </div>
-              <div className="col-span-12 md:col-span-4">
                 <DebouncedInput
-                  label="¿Horas totales del proyecto?"
+                  label="Total Manual Hours"
                   initialValue={hoursTotalManual}
                   onValueChange={setHoursTotalManual}
                   min={0}
                   step={1}
                   type="number"
-                  helpText="Opcional. Sobreescribe la suma de horas."
+                  helpText="Overrides sum if > 0"
                 />
               </div>
+            </section>
 
-              {/* Adjusters */}
-              <div className="col-span-12 mt-2">
-                <h2 className="text-base font-semibold">Ajustes por cliente y complejidad</h2>
-              </div>
-              <div className="col-span-12 md:col-span-6">
+            {/* Adjusters */}
+            <section className="card">
+              <h2 className="text-sm font-bold uppercase tracking-wider mb-4 text-textMuted flex items-center gap-2">
+                <span className="w-1 h-4 bg-white"></span>
+                Adjusters
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <AccessibleSelect
                   id="client-type"
-                  label="Tipo de cliente"
+                  label="Client Type"
                   value={clientType}
                   onChange={handleClientTypeChange}
                   options={clientTypeOptions}
                 />
-              </div>
-              <div className="col-span-12 md:col-span-6">
                 <AccessibleSelect
                   id="complexity"
-                  label="Complejidad del proyecto"
+                  label="Complexity"
                   value={complexity}
                   onChange={handleComplexityChange}
                   options={complexityOptions}
                 />
-              </div>
-              <div className="col-span-12 md:col-span-4">
                 <DebouncedInput
-                  label="Uplift por valor percibido (%)"
+                  label="Value Uplift %"
                   initialValue={valueUpliftPct}
                   onValueChange={setValueUpliftPct}
                   min={0}
                   max={200}
                   type="number"
                 />
+<<<<<<< HEAD
               </div>
 
               {/* Engagement model */}
@@ -528,29 +689,10 @@ export default function App() {
                 />
               </div>
               <div className="col-span-12 md:col-span-6">
+=======
+>>>>>>> 1230d17 (UI Overhaul: Tech/AI aesthetic + Currency, Fiscal, Utilization, System Loadout, Market Telemetry features)
                 <DebouncedInput
-                  label="Horas/mes (solo retainer)"
-                  initialValue={retainerHours}
-                  onValueChange={setRetainerHours}
-                  min={0}
-                  step={1}
-                  type="number"
-                />
-              </div>
-              <div className="col-span-12 md:col-span-6">
-                <DebouncedInput
-                  label="Descuento retainer (%)"
-                  initialValue={retainerDiscountPct}
-                  onValueChange={setRetainerDiscountPct}
-                  min={0}
-                  max={60}
-                  type="number"
-                  helpText="Guía: 40h ≈ 10‑15%, 60h ≈ 15‑20%, 80h ≈ 18‑25%."
-                />
-              </div>
-              <div className="col-span-12 md:col-span-6">
-                <DebouncedInput
-                  label="Recargo por urgencia (%)"
+                  label="Rush Fee %"
                   initialValue={rushPct}
                   onValueChange={setRushPct}
                   min={0}
@@ -558,7 +700,9 @@ export default function App() {
                   type="number"
                 />
               </div>
+            </section>
 
+<<<<<<< HEAD
               {/* Buttons */}
               <div className="col-span-12 flex flex-wrap gap-2 mt-2">
                 <BrandButton onClick={() => applyPreset(region)}>
@@ -719,15 +863,147 @@ export default function App() {
                   <div className="text-sm font-medium mb-1">Horas totales del proyecto</div>
                   <div className="text-xl font-bold">
                     {totalProjectHours > 0 ? totalProjectHours : '—'}
+=======
+            {/* Engagement */}
+            <section className="card">
+              <h2 className="text-sm font-bold uppercase tracking-wider mb-4 text-textMuted flex items-center gap-2">
+                <span className="w-1 h-4 bg-white"></span>
+                Engagement Model
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <AccessibleSelect
+                  id="engagement"
+                  label="Type"
+                  value={engagement}
+                  onChange={(e) => setEngagement(e.target.value)}
+                  options={engagementOptions}
+                />
+                {engagement === 'retainer' && (
+                  <>
+                    <DebouncedInput
+                      label="Hours/Month"
+                      initialValue={retainerHours}
+                      onValueChange={setRetainerHours}
+                      min={0}
+                      step={1}
+                      type="number"
+                    />
+                    <DebouncedInput
+                      label="Retainer Discount %"
+                      initialValue={retainerDiscountPct}
+                      onValueChange={setRetainerDiscountPct}
+                      min={0}
+                      max={60}
+                      type="number"
+                      helpText="Suggested: 15-20%"
+                    />
+                  </>
+                )}
+              </div>
+            </section>
+
+            {/* Actions */}
+            <div className="flex flex-wrap gap-3">
+              <button className="btn" onClick={() => applyPreset(region)}>
+                Reset Preset
+              </button>
+              <button className="btn btn-secondary" onClick={() => exportJson()}>
+                Export JSON
+              </button>
+              <button className="btn btn-secondary" onClick={() => handleExportPDF()}>
+                Export PDF
+              </button>
+            </div>
+
+          </div>
+
+          {/* Right Column: Results (Sticky) */}
+          <div className="lg:col-span-5">
+            <div className="sticky top-24 space-y-6">
+
+              {/* Main Output */}
+              <div className="card border-white/20 bg-surfaceHighlight/10">
+                <div className="absolute top-0 right-0 p-4">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
+                </div>
+                <h2 className="text-sm font-bold uppercase tracking-wider mb-6 text-textMuted">Telemetry / Output</h2>
+
+                <div className="space-y-4">
+                  <div className="kpi">
+                    <span className="text-xs uppercase text-textMuted font-mono">Adjusted Rate</span>
+                    <div className="text-4xl font-bold font-mono tracking-tighter mt-1">
+                      {fmtMoney(adjustedRate, currency)}<span className="text-lg text-textMuted font-sans">/h</span>
+                    </div>
+                    <MarketTelemetry
+                      currentRate={adjustedRate}
+                      marketRange={marketRateRange}
+                      currency={currency}
+                    />
+>>>>>>> 1230d17 (UI Overhaul: Tech/AI aesthetic + Currency, Fiscal, Utilization, System Loadout, Market Telemetry features)
                   </div>
-                  <div className="small muted">
-                    {hoursTotalManual > 0
-                      ? 'Valor ingresado manualmente'
-                      : `${hoursResearch} horas Research + ${hoursUI} horas UI`}
+
+                  <div className="kpi">
+                    <span className="text-xs uppercase text-textMuted font-mono">Net Income (Est.)</span>
+                    <div className="text-2xl font-bold font-mono tracking-tighter mt-1 text-green-400">
+                      {fmtMoney(netIncome, currency)}<span className="text-sm text-textMuted font-sans">/yr</span>
+                    </div>
+                    <div className="text-xs text-textMuted font-mono mt-1">
+                      Tax: {fmtMoney(taxAmount, currency)}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="kpi">
+                      <span className="text-xs uppercase text-textMuted font-mono">Fixed Price</span>
+                      <div className="text-xl font-bold font-mono mt-1">
+                        {totalProjectHours > 0 ? fmtMoney(fixedPrice, currency) : '—'}
+                      </div>
+                    </div>
+                    <div className="kpi">
+                      <span className="text-xs uppercase text-textMuted font-mono">Retainer</span>
+                      <div className="text-xl font-bold font-mono mt-1">
+                        {engagement === 'retainer' && retainerHours > 0
+                          ? fmtMoney(retainerPrice, currency)
+                          : '—'}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              {/* Detailed Breakdown */}
+              <div className="card">
+                <h3 className="text-xs font-bold uppercase tracking-wider mb-4 text-textMuted">Data Stream</h3>
+                <div className="space-y-3 font-mono text-sm">
+                  <div className="flex justify-between items-center border-b border-border pb-2">
+                    <span className="text-textMuted">Billable Hours/Year</span>
+                    <span>{Math.round(billableHours)}</span>
+                  </div>
+                  <div className="flex justify-between items-center border-b border-border pb-2">
+                    <span className="text-textMuted">Base Rate (UI)</span>
+                    <span>{fmtMoney(rateUI, currency)}/h</span>
+                  </div>
+                  <div className="flex justify-between items-center border-b border-border pb-2">
+                    <span className="text-textMuted">Base Rate (UXR)</span>
+                    <span>{fmtMoney(rateUXR, currency)}/h</span>
+                  </div>
+                  <div className="flex justify-between items-center border-b border-border pb-2">
+                    <span className="text-textMuted">Blended Rate</span>
+                    <span>{fmtMoney(blendedRate, currency)}/h</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2">
+                    <span className="text-textMuted">Total Project Hours</span>
+                    <span className="font-bold">{totalProjectHours > 0 ? totalProjectHours : '—'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 border border-border rounded bg-surfaceHighlight/20 text-xs text-textMuted font-mono">
+                <p>&gt; SYSTEM_TIP: Adjust region presets to calibrate baseline metrics. Export configuration for persistence.</p>
+              </div>
+
             </div>
+<<<<<<< HEAD
           </BrandCard>
         </aside>
       </div>
@@ -742,6 +1018,12 @@ export default function App() {
           Cambia región y luego ajusta ingresos/overhead/margen según tu operación. Usa "Exportar estimación" para guardar tu escenario.
         </span>
       </footer>
+=======
+          </div>
+
+        </div>
+      </main>
+>>>>>>> 1230d17 (UI Overhaul: Tech/AI aesthetic + Currency, Fiscal, Utilization, System Loadout, Market Telemetry features)
     </div>
   );
 }
