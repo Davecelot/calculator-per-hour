@@ -18,7 +18,7 @@ export default function App() {
 
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
             <h1 className="text-lg font-bold tracking-tight uppercase">
@@ -96,7 +96,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="flex-grow p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+      <main className="flex-grow p-3 sm:p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full">
         {activeTab === 'calculator' ? (
           <CalculatorView t={t} language={language} />
         ) : (

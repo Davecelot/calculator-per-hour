@@ -56,21 +56,21 @@ export default function OverheadManager({ totalOverhead, setTotalOverhead, curre
                             type="text"
                             value={item.name}
                             onChange={(e) => updateItem(item.id, 'name', e.target.value)}
-                            className="flex-grow bg-background border border-border rounded px-2 py-1 text-xs font-mono text-text focus:border-white focus:outline-none transition-colors"
+                            className="flex-grow bg-background border border-border rounded px-2 py-1.5 text-xs font-mono text-text focus:border-white focus:outline-none transition-colors min-h-[40px]"
                             placeholder="Expense Name"
                         />
-                        <div className="relative w-24">
+                        <div className="relative w-20 sm:w-24">
                             <input
                                 type="number"
                                 value={item.cost}
                                 onChange={(e) => updateItem(item.id, 'cost', parseFloat(e.target.value))}
-                                className="w-full bg-background border border-border rounded px-2 py-1 text-xs font-mono text-text text-right focus:border-white focus:outline-none transition-colors"
+                                className="w-full bg-background border border-border rounded px-2 py-1.5 text-xs font-mono text-text text-right focus:border-white focus:outline-none transition-colors min-h-[40px]"
                                 min="0"
                             />
                         </div>
                         <button
                             onClick={() => removeItem(item.id)}
-                            className="text-textMuted hover:text-red-400 transition-colors p-1 opacity-0 group-hover:opacity-100"
+                            className="text-textMuted hover:text-red-400 transition-colors p-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 min-h-[40px] min-w-[40px] flex items-center justify-center"
                             title="Remove Module"
                         >
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>

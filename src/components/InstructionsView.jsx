@@ -2,10 +2,10 @@ import React from 'react';
 
 export default function InstructionsView({ t }) {
     return (
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className="max-w-4xl mx-auto space-y-6 md:space-y-8">
 
             {/* Overview */}
-            <section className="card">
+            <section className="card p-4 md:p-6">
                 <h2 className="text-lg font-bold uppercase tracking-wider mb-4 text-textMuted flex items-center gap-2">
                     <span className="w-1 h-5 bg-white"></span>
                     {t.instructions?.overview?.title || "Overview"}
@@ -21,7 +21,7 @@ export default function InstructionsView({ t }) {
             </section>
 
             {/* Configuration Guide */}
-            <section className="card">
+            <section className="card p-4 md:p-6">
                 <h2 className="text-lg font-bold uppercase tracking-wider mb-4 text-textMuted flex items-center gap-2">
                     <span className="w-1 h-5 bg-white"></span>
                     {t.instructions?.configuration?.title || "Configuration"}
@@ -45,7 +45,7 @@ export default function InstructionsView({ t }) {
             </section>
 
             {/* Scope & Mix */}
-            <section className="card">
+            <section className="card p-4 md:p-6">
                 <h2 className="text-lg font-bold uppercase tracking-wider mb-4 text-textMuted flex items-center gap-2">
                     <span className="w-1 h-5 bg-white"></span>
                     {t.instructions?.scope?.title || "Scope & Mix"}
@@ -71,7 +71,7 @@ export default function InstructionsView({ t }) {
             </section>
 
             {/* Adjusters */}
-            <section className="card">
+            <section className="card p-4 md:p-6">
                 <h2 className="text-lg font-bold uppercase tracking-wider mb-4 text-textMuted flex items-center gap-2">
                     <span className="w-1 h-5 bg-white"></span>
                     {t.instructions?.adjusters?.title || "Adjusters"}

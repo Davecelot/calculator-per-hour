@@ -287,12 +287,12 @@ export default function CalculatorView({ t, language }) {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
       {/* Left Column: Controls */}
       <div className="lg:col-span-7 space-y-6">
 
         {/* Region & Currency */}
-        <section className="card">
+        <section className="card p-4 md:p-6">
           <div className="absolute top-0 right-0 p-2 opacity-20">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M2 12h20" /></svg>
           </div>
@@ -311,7 +311,7 @@ export default function CalculatorView({ t, language }) {
         </section>
 
         {/* Business Assumptions */}
-        <section className="card">
+        <section className="card p-4 md:p-6">
           <h2 className="text-sm font-bold uppercase tracking-wider mb-4 text-textMuted flex items-center gap-2">
             <span className="w-1 h-4 bg-white"></span>
             {t.businessLogic}
@@ -405,7 +405,7 @@ export default function CalculatorView({ t, language }) {
         </section>
 
         {/* Project Scope */}
-        <section className="card">
+        <section className="card p-4 md:p-6">
           <h2 className="text-sm font-bold uppercase tracking-wider mb-4 text-textMuted flex items-center gap-2">
             <span className="w-1 h-4 bg-white"></span>
             {t.scopeMix}
@@ -440,7 +440,7 @@ export default function CalculatorView({ t, language }) {
         </section>
 
         {/* Adjusters */}
-        <section className="card">
+        <section className="card p-4 md:p-6">
           <h2 className="text-sm font-bold uppercase tracking-wider mb-4 text-textMuted flex items-center gap-2">
             <span className="w-1 h-4 bg-white"></span>
             {t.adjusters}
@@ -480,7 +480,7 @@ export default function CalculatorView({ t, language }) {
         </section>
 
         {/* Engagement */}
-        <section className="card">
+        <section className="card p-4 md:p-6">
           <h2 className="text-sm font-bold uppercase tracking-wider mb-4 text-textMuted flex items-center gap-2">
             <span className="w-1 h-4 bg-white"></span>
             {t.engagementModel}
@@ -534,10 +534,10 @@ export default function CalculatorView({ t, language }) {
 
       {/* Right Column: Results (Sticky) */}
       <div className="lg:col-span-5">
-        <div className="sticky top-24 space-y-6">
+        <div className="lg:sticky top-4 lg:top-24 space-y-4 lg:space-y-6">
 
           {/* Main Output */}
-          <div className="card border-white/20 bg-surfaceHighlight/10">
+          <div className="card p-4 md:p-6 border-white/20 bg-surfaceHighlight/10">
             <div className="absolute top-0 right-0 p-4">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
             </div>
@@ -586,7 +586,7 @@ export default function CalculatorView({ t, language }) {
           </div>
 
           {/* Detailed Breakdown */}
-          <div className="card">
+          <div className="card p-4 md:p-6">
             <h3 className="text-xs font-bold uppercase tracking-wider mb-4 text-textMuted">{t.dataStream}</h3>
             <div className="space-y-3 font-mono text-sm">
               <div className="flex justify-between items-center border-b border-border pb-2">
