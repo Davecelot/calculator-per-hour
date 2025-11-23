@@ -12,10 +12,18 @@ import MarketTelemetry from './MarketTelemetry';
 // Import hooks and services
 import { useRateCalculation } from '../hooks/useRateCalculation';
 import { fetchRates } from '../services/currency';
-import { formatCurrency as fmtMoney } from '../utils/format';
+import { formatCurrency } from '../utils/format';
 import { pdfExport } from '../utils/pdfExport';
 
 export default function CalculatorView({ t, language }) {
+  // Determine locale based on region/currency
+  const getLocale = (reg, curr) => {
+    if (reg === 'LATAM') return curr === 'USD' ? 'en-US' : 'es-AR';
+    if (reg === 'USA') return 'en-US';
+    if (reg === 'EU_WEST' || reg === 'EU_EAST') return 'de-DE'; // Standard EU formatting
+    return 'en-US';
+  };
+
   // Core State
   const [region, setRegion] = useState('LATAM');
   const [currency, setCurrency] = useState('USD');
@@ -547,7 +555,7 @@ export default function CalculatorView({ t, language }) {
               <div className="kpi">
                 <span className="text-xs uppercase text-textMuted font-mono">{t.adjustedRate}</span>
                 <div className="text-4xl font-bold font-mono tracking-tighter mt-1">
-                  {fmtMoney(adjustedRate, currency)}<span className="text-lg text-textMuted font-sans">/h</span>
+                  {formatCurrency(adjustedRate, currency, getLocale(region, currency))}<span className="text-lg text-textMuted font-sans">/h</span>
                 </div>
                 <MarketTelemetry
                   currentRate={adjustedRate}
@@ -559,10 +567,10 @@ export default function CalculatorView({ t, language }) {
               <div className="kpi">
                 <span className="text-xs uppercase text-textMuted font-mono">{t.netIncome}</span>
                 <div className="text-2xl font-bold font-mono tracking-tighter mt-1 text-green-400">
-                  {fmtMoney(netIncome, currency)}<span className="text-sm text-textMuted font-sans">/yr</span>
+                  {formatCurrency(netIncome, currency, getLocale(region, currency))}<span className="text-sm text-textMuted font-sans">/yr</span>
                 </div>
                 <div className="text-xs text-textMuted font-mono mt-1">
-                  {t.tax}: {fmtMoney(taxAmount, currency)}
+                  {t.tax}: {formatCurrency(taxAmount, currency, getLocale(region, currency))}
                 </div>
               </div>
 
@@ -570,14 +578,14 @@ export default function CalculatorView({ t, language }) {
                 <div className="kpi">
                   <span className="text-xs uppercase text-textMuted font-mono">{t.fixedPrice}</span>
                   <div className="text-xl font-bold font-mono mt-1">
-                    {totalProjectHours > 0 ? fmtMoney(fixedPrice, currency) : '—'}
+                    {totalProjectHours > 0 ? formatCurrency(fixedPrice, currency, getLocale(region, currency)) : '—'}
                   </div>
                 </div>
                 <div className="kpi">
                   <span className="text-xs uppercase text-textMuted font-mono">{t.retainer}</span>
                   <div className="text-xl font-bold font-mono mt-1">
                     {engagement === 'retainer' && retainerHours > 0
-                      ? fmtMoney(retainerPrice, currency)
+                      ? formatCurrency(retainerPrice, currency, getLocale(region, currency))
                       : '—'}
                   </div>
                 </div>
@@ -595,15 +603,15 @@ export default function CalculatorView({ t, language }) {
               </div>
               <div className="flex justify-between items-center border-b border-border pb-2">
                 <span className="text-textMuted">{t.baseRateUI}</span>
-                <span>{fmtMoney(rateUI, currency)}/h</span>
+                <span>{formatCurrency(rateUI, currency, getLocale(region, currency))}/h</span>
               </div>
               <div className="flex justify-between items-center border-b border-border pb-2">
                 <span className="text-textMuted">{t.baseRateUXR}</span>
-                <span>{fmtMoney(rateUXR, currency)}/h</span>
+                <span>{formatCurrency(rateUXR, currency, getLocale(region, currency))}/h</span>
               </div>
               <div className="flex justify-between items-center border-b border-border pb-2">
                 <span className="text-textMuted">{t.blendedRate}</span>
-                <span>{fmtMoney(blendedRate, currency)}/h</span>
+                <span>{formatCurrency(blendedRate, currency, getLocale(region, currency))}/h</span>
               </div>
               <div className="flex justify-between items-center pt-2">
                 <span className="text-textMuted">{t.totalProjectHours}</span>

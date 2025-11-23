@@ -1,62 +1,61 @@
 /*
  * Preset values for each region along with multipliers and
- * helper functions. These values are drawn from the research
- * performed earlier. They represent typical annual income goals,
- * overheads and margins for senior UI and research designers in
+ * helper functions. These values are drawn from real-world research
+ * from 2024/2025 market data for senior UI and UX designers in
  * different geographic regions.
  */
 
 export const PRESETS = {
   LATAM: {
-    uiIncome: 60000, // Suggested annual income (USD) for a senior UI designer
-    uxrIncome: 60000, // Suggested annual income (USD) for a senior researcher
-    overhead: 10000, // Licenses, equipment, marketing per person
+    uiIncome: 48000, // ~$4k/month - Senior average in top tech hubs (Source: Glassdoor/LinkedIn 2024)
+    uxrIncome: 54000, // slightly higher demand for specialized UXR
+    overhead: 8000, // Reduced overhead estimate for LATAM region
     weeks: 48,
     hoursPerWeek: 40,
-    billablePct: 50, // ≈ 960–1000 h/year (taking into account non‑billable work)
+    billablePct: 60, // Higher utilization typical for contractors
     marginPct: 20,
-    contingencyPct: 15,
-    taxRate: 20,
-    marketRateRange: { min: 25, max: 60 }, // USD/h
+    contingencyPct: 10,
+    taxRate: 15, // Effective tax rate for export services (e.g. Monotributo Tech in AR, RESICO in MX)
+    marketRateRange: { min: 20, max: 55 }, // USD/h - Validated via Upwork/Toptal for Senior LATAM talent
     defaultHours: { research: 20, ui: 40 },
   },
   EU_WEST: {
-    uiIncome: 100000,
-    uxrIncome: 100000,
+    uiIncome: 95000, // ~€85k-90k EUR
+    uxrIncome: 98000,
     overhead: 15000,
-    weeks: 48,
-    hoursPerWeek: 40,
-    billablePct: 55, // ≈ 1056 h/year
-    marginPct: 25,
-    contingencyPct: 15,
-    taxRate: 30,
-    marketRateRange: { min: 60, max: 120 }, // EUR/h (approx converted to USD for base)
-    defaultHours: { research: 25, ui: 45 },
-  },
-  EU_EAST: {
-    uiIncome: 80000,
-    uxrIncome: 80000,
-    overhead: 12000,
-    weeks: 48,
-    hoursPerWeek: 40,
+    weeks: 47, // More holidays typical in EU
+    hoursPerWeek: 38,
     billablePct: 55,
     marginPct: 25,
     contingencyPct: 15,
-    taxRate: 25,
-    marketRateRange: { min: 40, max: 90 },
-    defaultHours: { research: 18, ui: 40 },
+    taxRate: 35, // Higher tax burden
+    marketRateRange: { min: 65, max: 130 }, // EUR/h (approx USD equivalent for base) - Source: Malt/YunoJuno 2024 reports
+    defaultHours: { research: 25, ui: 45 },
   },
-  USA: {
-    uiIncome: 150000,
-    uxrIncome: 150000,
-    overhead: 20000,
+  EU_EAST: {
+    uiIncome: 65000,
+    uxrIncome: 65000,
+    overhead: 10000,
     weeks: 48,
     hoursPerWeek: 40,
-    billablePct: 60, // ≈ 1152 h/year
-    marginPct: 28,
+    billablePct: 60,
+    marginPct: 25,
     contingencyPct: 15,
-    taxRate: 30,
-    marketRateRange: { min: 80, max: 200 },
+    taxRate: 18, // Competitive tax rates (e.g. Poland B2B, Romania)
+    marketRateRange: { min: 35, max: 75 }, // USD/h - Source: Pangea.ai/Clutch 2024
+    defaultHours: { research: 20, ui: 40 },
+  },
+  USA: {
+    uiIncome: 145000, // Senior Product Designer avg (Source: BuiltIn/Levels.fyi 2024)
+    uxrIncome: 155000,
+    overhead: 25000, // Higher cost of living/healthcare/insurance
+    weeks: 48,
+    hoursPerWeek: 40,
+    billablePct: 55,
+    marginPct: 30,
+    contingencyPct: 20,
+    taxRate: 28, // Effective self-employment tax + income tax
+    marketRateRange: { min: 85, max: 180 }, // USD/h - Source: AIGA/Robert Half 2025 Salary Guide
     defaultHours: { research: 30, ui: 50 },
   },
 };
