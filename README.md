@@ -112,17 +112,6 @@ Provides debouncing functionality to optimize performance for input fields.
 ### pdfExport
 Generates PDF exports of rate calculations for sharing or documentation.
 
-## Deployment
-
-The application is configured for automatic deployment to GitHub Pages using GitHub Actions. When you push to the main branch, the workflow in `.github/workflows/deploy.yml` will:
-
-1. Set up a Node.js environment
-2. Install dependencies
-3. Build the project
-4. Deploy to GitHub Pages
-
-The deployed application will be available at: `https://davecelot.github.io/calculator-per-hour/`
-
 ## PWA Support
 
 The application is configured as a Progressive Web App (PWA) using `vite-plugin-pwa`, allowing users to install it on their devices and use it offline.
@@ -138,7 +127,6 @@ Although `vite-plugin-pwa` is set to `registerType: 'autoUpdate'`, some browsers
 - Tailwind CSS
 - PostCSS
 - TypeScript (for type definitions)
-- GitHub Actions (for CI/CD)
 
 ## Contributing
 
