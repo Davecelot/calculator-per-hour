@@ -9,7 +9,7 @@ Web-based calculator for determining hourly rates and project budgets for UI/UX 
 - Project scope and hours mix calculation
 - Client type and complexity adjusters
 - Support for both freelance and retainer engagement models
-- Real-time currency conversion with up-to-date exchange rates
+- Currency conversion with regularly updated exchange rates (via Fawaz Ahmed Currency API)
 - Export functionality for saving calculations (JSON and PDF)
 - Responsive design for all devices
 - Accessibility improvements with ARIA attributes
